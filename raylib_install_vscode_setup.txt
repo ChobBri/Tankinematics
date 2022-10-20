@@ -1,0 +1,26 @@
+Installation for windows (idk about mac)
+1. Click the first link in teams (https://github.com/raysan5/raylib/releases/tag/4.0.0)
+
+2. Download raylib_installer_v4.0.mingw.exe and install raylib
+- raylib should be installed in C://
+
+Folder hierarchy
+--raylib
+      -npp
+	-raylib
+	-w64devkit
+
+3. Rename w64devkit folder to mingw
+
+4. Download zip from https://github.com/JSeneque/raylib-vscode-template
+   Paste the contents (.vscode and other stuff) into whatever folder you want your vscode workspace to be
+
+5. Double click on main.code-workspace (or `code .` in cmd while in the project directory)
+
+6. Create main.cpp. Grab an example code from raylib website and paste into main.cpp
+
+7. f5 to run
+
+
+Installation for mac
+I have no idea but maybe this might help? https://github.com/raysan5/raylib/wiki/Working-on-macOS
