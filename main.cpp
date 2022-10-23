@@ -22,6 +22,7 @@ int main(void)
     const int screenWidth = 1920/2;
     const int screenHeight = 1080/2;
     const int targetFPS = 60;
+    const int titleScreenTime = 2;
 
     InitWindow(screenWidth, screenHeight, "Tankinematics!");
     SetTargetFPS(targetFPS);
@@ -37,7 +38,6 @@ int main(void)
     
     //Globals
     int frameCounter = 0;
-    int titleScreenTime = 2;
     Vector2 originVector = {0, 0};
     bool quitFlag = false;
 
@@ -84,7 +84,7 @@ int main(void)
     //--------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!WindowShouldClose() && !quitFlag)        // Detect window close button or ESC key
+    while (!WindowShouldClose() && !quitFlag)        // Detect window close button or ESC key or set quitFlag to true
     {
         switch(currState) {
             case TITLE: {
