@@ -5,6 +5,7 @@
 ********************************************************************************************/
 
 #include "raylib.h"
+#include "Globals.hpp"
 #include <string.h>
 #include <stdlib.h>
 
@@ -28,9 +29,10 @@ int main(void)
     // Image windowIcon = LoadImage("resources/windowIcon.ico");
     // SetWindowIcon(windowIcon);
 
-    //Setting up enumerated state type, setting starting state to TITLE
-    enum gameStates {TITLE = 0, MAIN_MENU, ANGLE_LEVEL, WIND_LEVEL, SUCCESS, FAILURE, HINT, HISTORY, SIMULATION};
-    gameStates currState = TITLE;
+    //Set up globals (currentState, etc)
+    //Note that these are initialized to "TITLE" and "69" by default (in Globals.cpp), but you can override that here.
+    // Globals::currentState = MAIN_MENU;
+    // Globals::otherGlobalVariable = 69 + 1; //example of other global variable
     
     //Globals
     int frameCounter = 0;
@@ -68,33 +70,34 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose() && !quitFlag)        // Detect window close button or ESC key or set quitFlag to true
     {
-        switch(currState) { //Calculations / variable changes to be performed depending on state. This switch case doesn't handle drawing.
+        switch(Globals::currentState) { //Calculations / variable changes to be performed depending on state. This switch case doesn't handle drawing.
             case TITLE: {
                 frameCounter++;
-                currState = (frameCounter / targetFPS >= titleScreenTime) ? MAIN_MENU : TITLE; //If we've been at title for specified number of seconds, switch to main menu
+                if (frameCounter / targetFPS >= titleScreenTime) //If we've been at title for specified number of seconds, switch to main menu
+                    Globals::setCurrentState(MAIN_MENU);
             } break;
 
             case MAIN_MENU: {
                 if (CheckCollisionPointRec(GetMousePosition(), exitBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Exit Button Clicked
                     quitFlag = true;
                 } else if (CheckCollisionPointRec(GetMousePosition(), windLevelBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Wind level button Clicked
-                    currState = WIND_LEVEL;
+                    Globals::setCurrentState(WIND_LEVEL);
                 } else if (CheckCollisionPointRec(GetMousePosition(), angleLevelBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Angle level button Clicked
-                    currState = ANGLE_LEVEL;
+                    Globals::setCurrentState(ANGLE_LEVEL);
                 } else if (CheckCollisionPointRec(GetMousePosition(), historyBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //History button clicked
-                    currState = HISTORY;
+                    Globals::setCurrentState(HISTORY);
                 }
             } break;
 
             case ANGLE_LEVEL: {
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
-                    currState = MAIN_MENU;
+                    Globals::setCurrentState(MAIN_MENU);
                 }
             } break;
 
             case WIND_LEVEL: {
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
-                    currState = MAIN_MENU;
+                    Globals::setCurrentState(MAIN_MENU);
                 }
             } break;
 
@@ -112,7 +115,7 @@ int main(void)
 
             case HISTORY: {
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
-                    currState = MAIN_MENU;
+                    Globals::setCurrentState(MAIN_MENU);
                 }
             } break;
 
@@ -133,11 +136,11 @@ int main(void)
 
             ClearBackground(RAYWHITE);
 
-            if (currState != TITLE && currState != MAIN_MENU){
+            if (Globals::currentState != TITLE && Globals::currentState != MAIN_MENU){
                 DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
             }
 
-            switch(currState) {
+            switch(Globals::currentState) {
                 case TITLE: {
                     DrawTexture(titleScreenLogo_T, 0, 0, WHITE);
 
