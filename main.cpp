@@ -5,74 +5,24 @@
 ********************************************************************************************/
 
 #include "raylib.h"
-#include "Globals.hpp"
-#include "Level.h"
 #include "PersistentData.hpp"
 #include <string.h>
 #include <stdlib.h>
-#include <iostream>
 
-#define MAX_CHARS   255
+namespace globals {
+        enum gameStates {TITLE = 0, MAIN_MENU, ANGLE_LEVEL, WIND_LEVEL, SUCCESS, FAILURE, HINT, HISTORY, SIMULATION};
+        static gameStates currentState = TITLE;
+        
+        void setCurrentState(globals::gameStates newState){
+            globals::currentState = newState;
+            return;
+        }
+}
 
 int main(void)
 {
-    
-    
-    
-    
-    
-     //debug
-    struct Level test1 {
-        9.8, //gravity
-        45.0, //angle
-        {10, 4}, //init velocity
-        {6, 9}, //tank position
-        {9, 6}, //target position
-        {{"hint_sample_1"}}, //hints
-        "just solve it dummy1", //solution
-        true //angle override flag
-    };
+    PersistentData::debugLevel();
 
-    struct Level test2 {
-        19.8, //gravity
-        145.0, //angle
-        {110, 14}, //init velocity
-        {61, 91}, //tank position
-        {91, 61}, //target position
-        {{"hint_sample_2"}}, //hints
-        "just solve it dummy2", //solution
-        false //angle override flag
-    };
-
-    vector<Level> levelList {test1};
-    levelList.push_back(test2);
-
-    PersistentData::saveLevel(levelList);
-
-    vector<Level> loadedLevels = PersistentData::readLevel();
-
-    for (Level i : loadedLevels){
-        cout << "graivty: " << i.gravity << " angle: " << i.angle << " initVelocity: (" << i.initVelocity.x << ", " << i.initVelocity.y << ") tankPosition: (" << i.tankPosition.x << ", " << i.tankPosition.y << ") targetPosition: (" << i.targetPosition.x << ", " << i.targetPosition.y << ") hints: ";
-        for (string i : i.hints){
-            cout << i << " ";
-        }
-        cout << "solution: " << i.solution << " angleOverVel: ";
-        if (i.angleOverVel){
-            cout << "true" << endl;
-        } else {
-            cout << "false" << endl;
-        }
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 1920/2; //Keep that gorgeous 16:9 ratio 
@@ -83,18 +33,8 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Tankinematics!");
     SetTargetFPS(targetFPS);
-
-    //Load and set window icon
-    //NOT WORKING, ICON MUST BE "IN R8G8B8A8 FORMAT"
-    // Image windowIcon = LoadImage("resources/windowIcon.ico");
-    // SetWindowIcon(windowIcon);
-
-    //Set up globals (currentState, etc)
-    //Note that these are initialized to "TITLE" and "69" by default (in Globals.cpp), but you can override that here.
-    // Globals::currentState = MAIN_MENU;
-    // Globals::otherGlobalVariable = 69 + 1; //example of other global variable
     
-    //Globals
+    //globals
     int frameCounter = 0;
     bool quitFlag = false;
 
@@ -130,56 +70,56 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose() && !quitFlag)        // Detect window close button or ESC key or set quitFlag to true
     {
-        switch(Globals::currentState) { //Calculations / variable changes to be performed depending on state. This switch case doesn't handle drawing.
-            case TITLE: {
+        switch(globals::currentState) { //Calculations / variable changes to be performed depending on state. This switch case doesn't handle drawing.
+            case globals::TITLE: {
                 frameCounter++;
                 if (frameCounter / targetFPS >= titleScreenTime) //If we've been at title for specified number of seconds, switch to main menu
-                    Globals::setCurrentState(MAIN_MENU);
+                    globals::setCurrentState(globals::MAIN_MENU);
             } break;
 
-            case MAIN_MENU: {
+            case globals::MAIN_MENU: {
                 if (CheckCollisionPointRec(GetMousePosition(), exitBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Exit Button Clicked
                     quitFlag = true;
                 } else if (CheckCollisionPointRec(GetMousePosition(), windLevelBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Wind level button Clicked
-                    Globals::setCurrentState(WIND_LEVEL);
+                    globals::setCurrentState(globals::WIND_LEVEL);
                 } else if (CheckCollisionPointRec(GetMousePosition(), angleLevelBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Angle level button Clicked
-                    Globals::setCurrentState(ANGLE_LEVEL);
+                    globals::setCurrentState(globals::ANGLE_LEVEL);
                 } else if (CheckCollisionPointRec(GetMousePosition(), historyBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //History button clicked
-                    Globals::setCurrentState(HISTORY);
+                    globals::setCurrentState(globals::HISTORY);
                 }
             } break;
 
-            case ANGLE_LEVEL: {
+            case globals::ANGLE_LEVEL: {
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
-                    Globals::setCurrentState(MAIN_MENU);
+                    globals::setCurrentState(globals::MAIN_MENU);
                 }
             } break;
 
-            case WIND_LEVEL: {
+            case globals::WIND_LEVEL: {
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
-                    Globals::setCurrentState(MAIN_MENU);
+                    globals::setCurrentState(globals::MAIN_MENU);
                 }
             } break;
 
-            case SUCCESS: {
+            case globals::SUCCESS: {
                 //
             } break;
 
-            case FAILURE: {
+            case globals::FAILURE: {
                 //
             } break;
 
-            case HINT: {
+            case globals::HINT: {
                 //
             } break;
 
-            case HISTORY: {
+            case globals::HISTORY: {
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
-                    Globals::setCurrentState(MAIN_MENU);
+                    globals::setCurrentState(globals::MAIN_MENU);
                 }
             } break;
 
-            case SIMULATION: {
+            case globals::SIMULATION: {
                 //
             } break;
 
@@ -196,12 +136,12 @@ int main(void)
 
             ClearBackground(RAYWHITE);
 
-            if (Globals::currentState != TITLE && Globals::currentState != MAIN_MENU){
+            if (globals::currentState != globals::TITLE && globals::currentState != globals::MAIN_MENU){
                 DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
             }
 
-            switch(Globals::currentState) {
-                case TITLE: {
+            switch(globals::currentState) {
+                case globals::TITLE: {
                     DrawTexture(titleScreenLogo_T, 0, 0, WHITE);
 
                     if (frameCounter % targetFPS >= 0 && frameCounter % targetFPS < 15){ //This just changes the loading text every 0.25 (15/60th of a) second.
@@ -215,7 +155,7 @@ int main(void)
                     }
                 } break;
 
-                case MAIN_MENU: {
+                case globals::MAIN_MENU: {
                     DrawTexture(mainMenuBackground_T, 0, 0, WHITE);
 
                     DrawTexture(windButton_T, windLevelBP.x, windLevelBP.y, WHITE);
@@ -225,31 +165,31 @@ int main(void)
 
                 } break;
 
-                case ANGLE_LEVEL: {
+                case globals::ANGLE_LEVEL: {
                     DrawText("angle_level_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
                 } break;
 
-                case WIND_LEVEL: {
+                case globals::WIND_LEVEL: {
                     DrawText("wind_level_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
                 } break;
 
-                case SUCCESS: {
+                case globals::SUCCESS: {
                     DrawText("success_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
                 } break;
 
-                case FAILURE: {
+                case globals::FAILURE: {
                     DrawText("failure_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
                 } break;
 
-                case HINT: {
+                case globals::HINT: {
                     DrawText("hint_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
                 } break;
 
-                case HISTORY: {
+                case globals::HISTORY: {
                     DrawText("history_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
                 } break;
 
-                case SIMULATION: {
+                case globals::SIMULATION: {
                     DrawText("simulation_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
                 } break;
 

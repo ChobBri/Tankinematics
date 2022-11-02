@@ -7,8 +7,9 @@ class PersistentData {
     public:
         static string relativeLevelFilePath;
 
-        static void saveLevel(vector<Level>);
+        static void saveLevels(vector<Level>);
 
-        static vector<Level> readLevel();
-    private:
+        static vector<Level> loadLevels();
+
+        static void debugLevel();
 };
