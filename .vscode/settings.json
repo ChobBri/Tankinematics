@@ -19,6 +19,9 @@
         "*.tcc": "cpp",
         "cstdint": "cpp",
         "type_traits": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "fstream": "cpp",
+        "iosfwd": "cpp",
+        "ostream": "cpp"
     }
 }

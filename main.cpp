@@ -6,13 +6,73 @@
 
 #include "raylib.h"
 #include "Globals.hpp"
+#include "Level.h"
+#include "PersistentData.hpp"
 #include <string.h>
 #include <stdlib.h>
+#include <iostream>
 
 #define MAX_CHARS   255
 
 int main(void)
 {
+    
+    
+    
+    
+    
+     //debug
+    struct Level test1 {
+        9.8, //gravity
+        45.0, //angle
+        {10, 4}, //init velocity
+        {6, 9}, //tank position
+        {9, 6}, //target position
+        {{"hint_sample_1"}}, //hints
+        "just solve it dummy1", //solution
+        true //angle override flag
+    };
+
+    struct Level test2 {
+        19.8, //gravity
+        145.0, //angle
+        {110, 14}, //init velocity
+        {61, 91}, //tank position
+        {91, 61}, //target position
+        {{"hint_sample_2"}}, //hints
+        "just solve it dummy2", //solution
+        false //angle override flag
+    };
+
+    vector<Level> levelList {test1};
+    levelList.push_back(test2);
+
+    PersistentData::saveLevel(levelList);
+
+    vector<Level> loadedLevels = PersistentData::readLevel();
+
+    for (Level i : loadedLevels){
+        cout << "graivty: " << i.gravity << " angle: " << i.angle << " initVelocity: (" << i.initVelocity.x << ", " << i.initVelocity.y << ") tankPosition: (" << i.tankPosition.x << ", " << i.tankPosition.y << ") targetPosition: (" << i.targetPosition.x << ", " << i.targetPosition.y << ") hints: ";
+        for (string i : i.hints){
+            cout << i << " ";
+        }
+        cout << "solution: " << i.solution << " angleOverVel: ";
+        if (i.angleOverVel){
+            cout << "true" << endl;
+        } else {
+            cout << "false" << endl;
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 1920/2; //Keep that gorgeous 16:9 ratio 
@@ -210,7 +270,7 @@ int main(void)
     UnloadTexture(historyButton_T);
     UnloadTexture(angleButton_T);
     UnloadTexture(windButton_T);
-    UnloadTexture(exitButton_T);
+    UnloadTexture(exitButton_T);    
 
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
