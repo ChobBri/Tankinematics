@@ -24,6 +24,9 @@ struct Level
     std::vector<std::string> hints;  // Text to provide hint to user. There can be multiple hints
     std::string solution;  // Text to provide solution to user
     bool angleOverVel = true;  // Flag to determine whether to solve for angle or velocity
+    int totalAttempts = 0;
+    int successfulAttempts = 0;
+    float time = 0.0f; // in seconds
     LevelType levelType = LevelType::Gravity;
 };
 
