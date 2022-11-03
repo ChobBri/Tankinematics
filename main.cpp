@@ -328,7 +328,7 @@ int main(void)
                 case globals::LevelFilter: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                    DrawText("level_filter_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
+                    DrawText("level_filter_placeholder", originVector.x, originVector.y, 25, WHITE);
 
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
                 } break;
