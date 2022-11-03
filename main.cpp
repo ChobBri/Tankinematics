@@ -24,6 +24,24 @@ namespace globals {
         }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------------
 //test
 
 struct replayButton {
@@ -83,6 +101,33 @@ replayButton drawHistoryEntry(Level level, int position){
     return returnValue;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int main(void)
 {
     PersistentData::debugLevel();
@@ -125,6 +170,20 @@ int main(void)
     Rectangle exitBB = {exitBP.x, exitBP.y, 40, 40};
     Rectangle backBB = {backBP.x, backBP.y, 40, 40};
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //--------------------------------------------------------------------------------------
     //test
     
@@ -155,6 +214,25 @@ int main(void)
     vector<replayButton> replayButtonList;
 
     //--------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Main game loop
     while (!WindowShouldClose() && !globals::quitFlag)        // Detect window close button or ESC key or set quitFlag to true
@@ -283,7 +361,7 @@ int main(void)
 
                 case globals::Simulation: {
                     DrawText("simulation_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
-                    DrawText(TextFormat("\n\nLevel info:\nGravity: %f\nAngle: %f\n", globals::simulationArgument.gravity, globals::simulationArgument.angle), originVector.x, originVector.y, 25, DARKGRAY);
+                    DrawText(TextFormat("\n\nLevel info:\nGravity: %f\nAngle: %f\nNumber of Attempts: %d\nNumber of Successes: %d", globals::simulationArgument.gravity, globals::simulationArgument.angle, globals::simulationArgument.totalAttempts, globals::simulationArgument.successfulAttempts), originVector.x, originVector.y, 25, DARKGRAY);
 
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
                 } break;
