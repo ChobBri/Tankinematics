@@ -55,6 +55,7 @@ int main(void)
     Texture2D target = LoadTexture("resources/Target.png");
     Texture2D hint = LoadTexture("resources/HINT.png");
     Texture2D simulate = LoadTexture("resources/simulate.png");
+    Texture2D castle = LoadTexture("resources/castle.png");
 
     //for success
     Texture2D replay = LoadTexture("resources/Replay.png");
@@ -68,10 +69,11 @@ int main(void)
     Vector2 backBP = {10, 490};
 
     Vector2 hintBP = {900, 10};
-    Vector2 simulateBP = {screenWidth/2.5+20, 50};
+    Vector2 simulateBP = {screenWidth/2.5+20, 70};
 
     Vector2 replayBP = {410, 250};
     Vector2 mainBP = {510, 250};
+
 
     //Define button bounds (BBs)
     //Rectangles which are under their respective textures. Done this way so you can use intersection-detection methods which use rectangles and points. 
@@ -93,7 +95,7 @@ int main(void)
     Rectangle field = {0, tankPos.y+90, screenWidth, screenHeight}; 
 
     //not working input field
-    Rectangle input = {screenWidth/2, 20, 100, 20};
+    Rectangle input = {screenWidth/2, 35, 100, 20};
     char inputW[] = {"Angle: "};
 
     char distance[] = {"Distance: 60km"};
@@ -211,7 +213,7 @@ int main(void)
                 case globals::LevelFilter: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                    
+                     DrawText("LevelFilter_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
 
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
                 } break;
@@ -220,7 +222,7 @@ int main(void)
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
                     DrawText("SUCCESS!", screenWidth/2 - 100, screenHeight/2 -  100, 50, WHITE);
-                    DrawRectangleRec(field, DARKGREEN); 
+                    DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41));
                     DrawTextureV(tankSprite, tankPos, WHITE);
                     DrawTexture(target, 720, tankPos.y-rand, RED);
 
@@ -239,20 +241,21 @@ int main(void)
                 case globals::Simulation: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                    DrawRectangleRec(field, DARKGREEN); 
+                    DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41)); 
                     DrawTextureV(tankSprite, tankPos, WHITE);
+                    DrawTexture(castle,670, 145, WHITE);
                     DrawTexture(target, 720, tankPos.y-rand, RED);
+                    
 
                     DrawText(distance,screenWidth/3, tankPos.y+95,25, WHITE);
-                    DrawText(height,screenWidth-150, screenHeight/3,25, WHITE);
-
-                    DrawText(infoGrav,infoBox.x+20, infoBox.y+20, 19, WHITE);
-                    DrawText(infoInitVel,infoBox.x+20, infoBox.y+50, 19, WHITE);
+                    DrawText(height,screenWidth/3+200, tankPos.y+95,25, WHITE);
 
                     //placeholder for input
-                    DrawRectangleLinesEx(infoBox, 3, GOLD);
+                    DrawRectangleRec(infoBox, ColorFromHSV(55, 0.23, 0.97));
+                    DrawText(infoGrav,infoBox.x+20, infoBox.y+20, 19, BLACK);
+                    DrawText(infoInitVel,infoBox.x+20, infoBox.y+50, 19, BLACK);
 
-                    DrawText(inputW, input.x - 70, input.y, 20, WHITE);
+                    DrawText(inputW, input.x -80, input.y, 25, WHITE);
                     DrawRectangleRec(input, WHITE);
 
                     DrawTexture(simulate, simulateBP.x, simulateBP.y, WHITE);
