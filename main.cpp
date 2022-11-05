@@ -56,6 +56,7 @@ int main(void)
     Texture2D hint = LoadTexture("resources/HINT.png");
     Texture2D simulate = LoadTexture("resources/simulate.png");
     Texture2D castle = LoadTexture("resources/castle.png");
+    Texture2D damaged = LoadTexture("resources/damaged.png");
 
     //for success
     Texture2D replay = LoadTexture("resources/Replay.png");
@@ -224,6 +225,9 @@ int main(void)
                     DrawText("SUCCESS!", screenWidth/2 - 100, screenHeight/2 -  100, 50, WHITE);
                     DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41));
                     DrawTextureV(tankSprite, tankPos, WHITE);
+                    DrawTextureV(tankSprite, tankPos, WHITE); 
+                    //castle moves, fix later
+                    DrawTexture(damaged,670, 145, WHITE);
                     DrawTexture(target, 720, tankPos.y-rand, RED);
 
                     DrawTexture(main, mainBB.x, mainBB.y, WHITE);
