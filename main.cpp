@@ -11,10 +11,11 @@
 #include <stdlib.h>
 
 namespace globals {
-        enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation};
+        enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, Hints};
         static gameStates currentState = Title;
         static bool quitFlag = false;
         int frameCounter = 0;
+        int simCheck = 0;
 
         void setCurrentState(globals::gameStates newState){
             globals::currentState = newState;
@@ -49,12 +50,28 @@ int main(void)
     Texture2D filterButton_T = LoadTexture("resources/filterButton.png");
     Texture2D exitButton_T = LoadTexture("resources/exitButton.png");
 
+    //for sim
+    Texture2D tankSprite = LoadTexture("resources/tankSprite.png");
+    Texture2D target = LoadTexture("resources/Target.png");
+    Texture2D hint = LoadTexture("resources/HINT.png");
+    Texture2D simulate = LoadTexture("resources/simulate.png");
+
+    //for success
+    Texture2D replay = LoadTexture("resources/Replay.png");
+    Texture2D main = LoadTexture("resources/main.png");
+
     //Define button placement vectors (BPs). BPs are used to define where to draw textures which overlay onto rectangles. 
     Vector2 historyBP = {355, 400};
     Vector2 playBP = {355, 270};
     Vector2 filterBP = {485, 270};
     Vector2 exitBP = {10, 490};
     Vector2 backBP = {10, 490};
+
+    Vector2 hintBP = {900, 10};
+    Vector2 simulateBP = {screenWidth/2.5+20, 50};
+
+    Vector2 replayBP = {410, 250};
+    Vector2 mainBP = {510, 250};
 
     //Define button bounds (BBs)
     //Rectangles which are under their respective textures. Done this way so you can use intersection-detection methods which use rectangles and points. 
@@ -63,12 +80,39 @@ int main(void)
     Rectangle filterBB = {filterBP.x, filterBP.y, 120, 120};
     Rectangle exitBB = {exitBP.x, exitBP.y, 40, 40};
     Rectangle backBB = {backBP.x, backBP.y, 40, 40};
+    //placement of the buttons may be slightly off, have to fix
+    Rectangle hintBB = {hintBP.x, hintBP.y, 40,40};
+    Rectangle simulateBB = {simulateBP.x, simulateBP.y, 120, 40};
+    Rectangle replayBB = {replayBP.x, replayBP.y, 60, 60};
+    Rectangle mainBB = {mainBP.x, mainBP.y, 60,60};
+
+    //Define the placements for simulation -- can be replaced with calling from level builder later
+    Rectangle infoBox = {30, 70, 240, 90};
+
+    Vector2 tankPos = {(infoBox.x + infoBox.width)/3, 350};
+    Rectangle field = {0, tankPos.y+90, screenWidth, screenHeight}; 
+
+    //not working input field
+    Rectangle input = {screenWidth/2, 20, 100, 20};
+    char inputW[] = {"Angle: "};
+
+    char distance[] = {"Distance: 60km"};
+    char height[] = {"Height: 50km"};
+    char infoGrav[] = {"Gravity: 9.8m/s^2"};
+    char infoInitVel[] = {"Initial Velocity: 30 m/s"};
+
+    int rand = GetRandomValue(20,200);
+
+    //hints
+
+    Vector2 circHint = {screenWidth/2, screenHeight/2};
 
     //--------------------------------------------------------------------------------------
 
     // Main game loop
     while (!WindowShouldClose() && !globals::quitFlag)        // Detect window close button or ESC key or set quitFlag to true
     {
+        
         switch(globals::currentState) { //Calculations / variable changes to be performed depending on state. This switch case doesn't handle drawing.
             case globals::Title: {
                 globals::frameCounter++;
@@ -95,7 +139,11 @@ int main(void)
             } break;
 
             case globals::Success: {
-                //
+                if (CheckCollisionPointRec(GetMousePosition(), replayBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                    globals::setCurrentState(globals::Simulation);
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), mainBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                    globals::setCurrentState(globals:: MainMenu);
             } break;
 
             case globals::History: {
@@ -108,7 +156,19 @@ int main(void)
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
                     globals::setCurrentState(globals::MainMenu);
                 }
+                else if (CheckCollisionPointRec(GetMousePosition(), hintBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                    globals::setCurrentState(globals::Hints);
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), simulateBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                    globals::setCurrentState(globals::Success);
+                    globals :: simCheck = 1;
+                }
             } break;
+            case globals::Hints:{
+                if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                    globals::setCurrentState(globals::Simulation);
+                }
+            }
 
             default: {
                 //shouldn't get here, means we're in an undefined state
@@ -151,17 +211,21 @@ int main(void)
                 case globals::LevelFilter: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                    DrawText("level_filter_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
+                    
 
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
                 } break;
-
+                
                 case globals::Success: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                    DrawText("success_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
+                    DrawText("SUCCESS!", screenWidth/2 - 100, screenHeight/2 -  100, 50, WHITE);
+                    DrawRectangleRec(field, DARKGREEN); 
+                    DrawTextureV(tankSprite, tankPos, WHITE);
+                    DrawTexture(target, 720, tankPos.y-rand, RED);
 
-                    DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
+                    DrawTexture(main, mainBB.x, mainBB.y, WHITE);
+                    DrawTexture(replay, replayBB.x, replayBB.y, WHITE);
                 } break;
 
                 case globals::History: {
@@ -173,9 +237,44 @@ int main(void)
                 } break;
 
                 case globals::Simulation: {
-                    DrawText("simulation_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
+                    DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
+                    DrawRectangleRec(field, DARKGREEN); 
+                    DrawTextureV(tankSprite, tankPos, WHITE);
+                    DrawTexture(target, 720, tankPos.y-rand, RED);
+
+                    DrawText(distance,screenWidth/3, tankPos.y+95,25, WHITE);
+                    DrawText(height,screenWidth-150, screenHeight/3,25, WHITE);
+
+                    DrawText(infoGrav,infoBox.x+20, infoBox.y+20, 19, WHITE);
+                    DrawText(infoInitVel,infoBox.x+20, infoBox.y+50, 19, WHITE);
+
+                    //placeholder for input
+                    DrawRectangleLinesEx(infoBox, 3, GOLD);
+
+                    DrawText(inputW, input.x - 70, input.y, 20, WHITE);
+                    DrawRectangleRec(input, WHITE);
+
+                    DrawTexture(simulate, simulateBP.x, simulateBP.y, WHITE);
+                    DrawTexture(hint, hintBP.x, hintBP.y, WHITE);
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
+
+                    if (globals::simCheck == 1)
+                    {
+                        //call simulation class that I(Ellen) have not made yet
+                    }
+
+                
+                } break;
+
+                case globals :: Hints: {
+                    DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
+
+                    DrawCircleV(circHint, 200, GOLD);
+                    DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
+                    DrawText("Hints", screenWidth/2-40, 80, 40, BLACK);
+                    //placeholder
+                    DrawText("Use the Equation: --------", screenWidth/2 - 160, 250,25, BLACK);
                 } break;
 
                 default: {
