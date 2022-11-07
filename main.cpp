@@ -190,24 +190,7 @@ int main(void)
     //This will eventually be "allLevels"
     vector<Level> levelList;
 
-    //Generate 10 levels with varying information
-    for (int i = 0; i < 8; i++){
-        levelList.emplace_back(Level{
-            1.2f*i, //gravity
-            15.0f*i, //angle
-            9.2f*i, //speed
-            {1.0f*i, 2.0f*i}, //init velocity
-            {3.0f*i, 1.23f*i}, //tank position
-            {1.1f*i, 6.1f*i}, //target position
-            {{("SAMPLEHINT" + to_string(i))}}, //hints
-            ("SAMPLESOLUTION" + to_string(i)), //solution
-            true, //angle override flag
-            2*i, //total attempts
-            i, //successful attempts
-            42.0f*i, //time
-            (i%2) ? Level::LevelType::Gravity : Level::LevelType::Angle //level type 
-        });
-    }
+    levelList = PersistentData::loadLevels();
 
     Rectangle historyBox = {240, 30, 480, 480}; //This is the grey box that contains all history entries
 
@@ -248,7 +231,7 @@ int main(void)
                 if (CheckCollisionPointRec(GetMousePosition(), exitBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Exit Button Clicked
                     globals::quitFlag = true;
                 } else if (CheckCollisionPointRec(GetMousePosition(), playBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Play button clicked
-                    globals::simulationArgument = levelList[5];
+                    globals::simulationArgument = levelList[0];
                     globals::setCurrentState(globals::Simulation);
                 } else if (CheckCollisionPointRec(GetMousePosition(), filterBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Filter button Clicked
                     globals::setCurrentState(globals::LevelFilter);
