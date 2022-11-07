@@ -129,8 +129,8 @@ void PersistentData::debugLevel(){
     //This will eventually be "allLevels"
     vector<Level> levelList;
 
-    //Generate 10 levels with varying information
-    for (int i = 0; i < 8; i++){
+    //Generate 11 levels with varying information
+    for (int i = 0; i < 11; i++){
         levelList.emplace_back(Level{
             1.2f*i, //gravity
             15.0f*i, //angle

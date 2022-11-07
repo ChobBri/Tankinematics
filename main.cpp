@@ -333,10 +333,11 @@ int main(void)
                     replayButtonList.clear();
                     replayButton temp;
 
-                    for (Level i : levelList){ //This both draws all the history entries AND stores the position of their replay buttons 
+                    for (Level i : levelList){ //This both draws the first 10 history entries AND stores the position of their replay buttons 
                         temp = drawHistoryEntry(i, position);
                         replayButtonList.push_back(temp);
                         position++;
+                        if (position > 10) break;
                     }
 
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
