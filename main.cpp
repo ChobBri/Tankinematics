@@ -7,6 +7,7 @@
 #include "raylib.h"
 #include "raygui.h"
 #include "PersistentData.hpp"
+#include "TextBox.hpp"
 #include <string.h>
 #include <stdlib.h>
 
