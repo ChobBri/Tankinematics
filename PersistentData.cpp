@@ -6,6 +6,9 @@ using namespace std;
 
 string PersistentData::relativeLevelFilePath = "levelData/level.dat";
 
+/**
+ * Save the passed vector of levels to disk.
+*/
 void PersistentData::saveLevels(vector<Level> source){
     ofstream outputStream(PersistentData::relativeLevelFilePath, ios::out);
     for (Level i : source){
@@ -16,11 +19,11 @@ void PersistentData::saveLevels(vector<Level> source){
         outputStream << i.solution << '\n';
         
         //Write number of hints
-        outputStream << to_string(i.hints.size()) << '\n';
+        outputStream << to_string(i.hints.size());
 
         //Write all hints
         for (string h : i.hints){
-        outputStream << h << '\t';
+        outputStream << "\n" << h;
         } 
 
         outputStream << '\n';
@@ -30,6 +33,10 @@ void PersistentData::saveLevels(vector<Level> source){
     return;
 }
 
+/**
+ *Loads level history data from file on disk, then returns 
+ a vector of levels from extracted data. 
+*/
 vector<Level> PersistentData::loadLevels(){
     //Used in loading contents of file
     ifstream inputStream(relativeLevelFilePath);
@@ -111,44 +118,35 @@ vector<Level> PersistentData::loadLevels(){
     return importedLevels;
 }
 
+
+/**
+ * ---DEBUG---
+ * Creates and saves 10 sample levels, then loads them from 
+ * file and displays their contents in terminal. 
+*/
 void PersistentData::debugLevel(){
     
-    //Create two levels
-    struct Level test1 {
-        9.8, //gravity
-        45.0, //angle
-        6969.69, //speed
-        {10, 4}, //init velocity
-        {6, 9}, //tank position
-        {9, 6}, //target position
-        {{"hint_sample_1"}}, //hints
-        "just solve it dummy1", //solution
-        true, //angle override flag
-        12, //total attempts
-        1, //successful attempts
-        420.0, //time
-        Level::LevelType::Angle //level type
-    };
+    //This will eventually be "allLevels"
+    vector<Level> levelList;
 
-    struct Level test2 {
-        19.8, //gravity
-        145.0, //angle
-        420.69, //speed
-        {110, 14}, //init velocity
-        {61, 91}, //tank position
-        {91, 61}, //target position
-        {{"hint_sample_2"},{"hint_sample_22"}}, //hints
-        "just solve it dummy2", //solution
-        false, //angle override flag
-        2, //total attempts
-        0, //successful attempts
-        68.0, //time
-        Level::LevelType::Gravity //level type
-    };
-
-    //Create vector<Level> to be written to disk
-    vector<Level> levelList {test1};
-    levelList.push_back(test2);
+    //Generate 11 levels with varying information
+    for (int i = 0; i < 11; i++){
+        levelList.emplace_back(Level{
+            1.2f*i, //gravity
+            15.0f*i, //angle
+            9.2f*i, //speed
+            {1.0f*i, 2.0f*i}, //init velocity
+            {3.0f*i, 1.23f*i}, //tank position
+            {1.1f*i, 6.1f*i}, //target position
+            {{("SAMPLEHINT" + to_string(i))}, {"Test hint"}}, //hints
+            ("SAMPLESOLUTION" + to_string(i)), //solution
+            true, //angle override flag
+            2*i, //total attempts
+            i, //successful attempts
+            42.0f*i, //time
+            (i%2) ? Level::LevelType::Gravity : Level::LevelType::Angle //level type 
+        });
+    }
     PersistentData::saveLevels(levelList);
 
     //Load levels back into new vector<Level> from disk
@@ -162,12 +160,17 @@ void PersistentData::debugLevel(){
         }
         cout << "\nsolution: " << i.solution << "\nangleOverVel: ";
         if (i.angleOverVel){
-            cout << "true";
+            cout << "true\n";
         } else {
-            cout << "false";
+            cout << "false\n";
         }
+
+        for (string hint : i.hints){
+            cout << "A hint: " << hint << '\n';
+        }
+
         cout << "\ntotalAttempts: " << i.totalAttempts << "\nsuccessfulAttempts: " << i.successfulAttempts << "\ntime: " << i.time << "\nlevelType: ";
-        
+
         switch (i.levelType)
         {
         case 0:
@@ -186,6 +189,7 @@ void PersistentData::debugLevel(){
             cout << "InitVelY\n\n";
             break;
         }
+
     } 
 
 }
