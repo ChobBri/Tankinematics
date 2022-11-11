@@ -7,6 +7,7 @@
 
 #include "raylib.h"
 #include "PersistentData.hpp"
+#include "ListView.hpp"
 #include <string.h>
 #include <stdlib.h>
 #include <iostream>
@@ -23,110 +24,6 @@ namespace globals {
             return;
         }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//---------------------------------------------------------------------------------------------
-//test
-
-struct replayButton {
-    Rectangle button;
-    int index = 0;
-};
-
-const char* levelTypeToString(Level::LevelType levelType) {
-    switch (levelType)
-        {
-        case 0:
-            return "Gravity";
-            break;
-        case 1:
-            return "Angle";
-            break;
-        case 2:
-            return "InitSpeed";
-            break;
-        case 3:
-            return "InitVelX";
-            break;
-        default:
-            return "InitVelY";
-            break;
-        }
-}
-/**
- * Draws a history entry for given level in specified postion. 
- * 
- * Returns a vector defining the replay button rectangle and 
- * index of this play button within "allLevels" vector
-*/
-replayButton drawHistoryEntry(Level level, int position){
-    //for readability
-    int leftBoxEdge = 244;
-    int topBoxEdge = (32 + (position - 1) * 48);
-    int boxWidth = 472;
-    int boxHeight = 44;
-    int fontSize = 4;
-
-    //Draw rectangle
-    DrawRectangle(leftBoxEdge, topBoxEdge, boxWidth, boxHeight, LIGHTGRAY);
-
-    //Draw level stats
-    DrawText(TextFormat("Total Attempts: %d", level.totalAttempts),             leftBoxEdge+4, topBoxEdge+4 + 0,    fontSize, BLACK);
-    DrawText(TextFormat("Successful Attempts: %d", level.successfulAttempts),   leftBoxEdge+4, topBoxEdge+4 + 10,   fontSize, BLACK);
-    DrawText(levelTypeToString(level.levelType),                                leftBoxEdge+4, topBoxEdge+4 + 20,   fontSize, BLACK);
-
-    //Draw play button and text
-    Rectangle playButton = {leftBoxEdge + boxWidth - 94, topBoxEdge + 4, 90, boxHeight-8};
-    DrawRectangleRec(playButton, LIME);
-    DrawText(TextFormat("Replay"), leftBoxEdge + boxWidth - 90, topBoxEdge + 8, 26, WHITE);
-
-    replayButton returnValue{replayButton{playButton, position - 1}};
-
-    return returnValue;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 int main(void)
 {
@@ -171,49 +68,14 @@ int main(void)
     Rectangle backBB = {backBP.x, backBP.y, 40, 40};
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //--------------------------------------------------------------------------------------
-    //test
-    
-    //This will eventually be "allLevels"
+    //Next two lines will eventually be replaced by Roy's levelHistory
     vector<Level> levelList;
-
     levelList = PersistentData::loadLevels();
 
-    Rectangle historyBox = {240, 30, 480, 480}; //This is the grey box that contains all history entries
-
-    vector<replayButton> replayButtonList;
-
-    //--------------------------------------------------------------------------------------
+    ListView testListView(240, 30, 480, 480, 3, levelList);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    levelList[0].successfulAttempts = 20000;
 
 
 
@@ -255,11 +117,10 @@ int main(void)
                     globals::setCurrentState(globals::MainMenu);
                 }
 
-                for (replayButton i : replayButtonList){
-                    if (CheckCollisionPointRec(GetMousePosition(), i.button) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //replay button clicked
-                        globals::simulationArgument = levelList[i.index];
-                        globals::setCurrentState(globals::Simulation);   
-                    }
+                //User wants to replay a level
+                if (testListView.isClicked()){
+                    globals::simulationArgument = testListView.getClicked();
+                    globals::setCurrentState(globals::Simulation);
                 }
 
             } break;
@@ -327,20 +188,9 @@ int main(void)
                 case globals::History: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                    DrawRectangleRec(historyBox, DARKGRAY);
-
-                    int position = 1;
-                    replayButtonList.clear();
-                    replayButton temp;
-
-                    for (Level i : levelList){ //This both draws the first 10 history entries AND stores the position of their replay buttons 
-                        temp = drawHistoryEntry(i, position);
-                        replayButtonList.push_back(temp);
-                        position++;
-                        if (position > 10) break;
-                    }
-
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
+
+                    testListView.DrawListView();
                 } break;
 
                 case globals::Simulation: {
