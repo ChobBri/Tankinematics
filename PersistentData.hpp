@@ -1,3 +1,6 @@
+#ifndef PERSISTENTDATA_HPP
+#define PERSISTENTDATA_HPP
+
 #include "Level.h"
 #include <fstream>
 
@@ -28,3 +31,5 @@ class PersistentData {
         */
         static void debugLevel();
 };
+
+#endif

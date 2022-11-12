@@ -2,44 +2,62 @@
 #define GRAVITYLEVELBUILDER_H
 
 #include "LevelBuilder.h"
+#include "LevelConstraints.h"
 #include "Level.h"
 #include <random>
 #include <vector>
 #include <string>
 
+/**
+ * GravityLevelBuilder is an abstract class to represent a level builder for gravity levels.
+*/
 class GravityLevelBuilder : public LevelBuilder
 {
 public:
     Level* BuildLevel() override
     {
-        std::random_device rd;
-        std::mt19937 rng(rd());
-        
         Level* level = new Level();
 
-        std::uniform_real_distribution<float> gravityDist(1.0f, 10.0f);
-        level->gravity = gravityDist(rng);
+        // Initialize level construction
+        initConstruct(level);
 
-        std::uniform_real_distribution<float> zeroToOneDist(0.0f, 1.0f);
-        level->angleOverVel = zeroToOneDist(rng) < 0.5f;
+        // Set level type
+        level->levelType = Level::LevelType::Gravity;
 
-        std::uniform_real_distribution<float> angleDist(0.0f, 90.0f);
-        level->angle = angleDist(rng);
+        // Different build method depending on angleOverVel
+        if (level->angleOverVel)
+        {
+            // Set hints
+            std::vector<std::string> hints = {"do this", "try that", "how bout this"};
+            level->hints = hints;
 
-        std::uniform_real_distribution<float> speedDist(20.0f, 100.0f);
-        level->initSpeed = speedDist(rng);
+            // Solve for solution
+            float ang = level->angle;
+            Vector2 iVel = {level->initSpeed * cosf(ang * DEG2RAD), level->initSpeed * sinf(ang * DEG2RAD)};
 
-        std::uniform_real_distribution<float> velXDist(1.0f, 10.0f);
-        float velx = velXDist(rng);
-        std::uniform_real_distribution<float> velYDist(1.0f, 10.0f);
-        float vely = velYDist(rng);
+            float dx = level->targetPosition.x - level->tankPosition.x;
+            float t = dx/(iVel.x);
+            float dy = level->targetPosition.y - level->tankPosition.y;
+            float a = 2 * (dy - iVel.y * t) / (t*t);  // solve for gravity
 
-        Vector2 initVel = {velx, vely};
-        level->initVelocity = initVel;
+            level->gravity = a;
+            level->solution = "The answer is " + std::to_string(a);
+        }
+        else
+        {
+            // Set hints
+            std::vector<std::string> hints = {"do this", "try that", "how bout this"};
+            level->hints = hints;
 
-        std::vector<std::string> hints = {"do this", "try that", "how bout this"};
-        level->hints = hints;
-        level->solution = "The answer is \"34.2\"";
+            // Solve for solution
+            float dx = level->targetPosition.x - level->tankPosition.x;
+            float t = dx/(level->initVelocity.x);
+            float dy = level->targetPosition.y - level->tankPosition.y;
+            float a = 2 * (dy - level->initVelocity.y * t)/(t*t);  // solve for gravity
+
+            level->gravity = a;
+            level->solution = "The answer is " + std::to_string(a);
+        }
         
         return level;
     }

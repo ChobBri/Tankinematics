@@ -4,11 +4,14 @@
 *
 ********************************************************************************************/
 
+
 #include "raylib.h"
-#include "raygui.h"
 #include "PersistentData.hpp"
+#include "TextBox.hpp"
+#include "ListView.hpp"
 #include <string.h>
 #include <stdlib.h>
+#include <iostream>
 
 namespace globals {
         enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, Hints};
@@ -16,6 +19,7 @@ namespace globals {
         static bool quitFlag = false;
         int frameCounter = 0;
         int simCheck = 0;
+        Level simulationArgument;
 
         void setCurrentState(globals::gameStates newState){
             globals::currentState = newState;
@@ -110,7 +114,17 @@ int main(void)
 
     Vector2 circHint = {screenWidth/2, screenHeight/2};
 
-    //--------------------------------------------------------------------------------------
+
+    //Next two lines will eventually be replaced by Roy's levelHistory
+    vector<Level> levelList;
+    levelList = PersistentData::loadLevels();
+
+    ListView testListView(240, 30, 480, 480, 3, levelList);
+
+
+    levelList[0].successfulAttempts = 20000;
+
+
 
     // Main game loop
     while (!WindowShouldClose() && !globals::quitFlag)        // Detect window close button or ESC key or set quitFlag to true
@@ -127,6 +141,7 @@ int main(void)
                 if (CheckCollisionPointRec(GetMousePosition(), exitBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Exit Button Clicked
                     globals::quitFlag = true;
                 } else if (CheckCollisionPointRec(GetMousePosition(), playBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Play button clicked
+                    globals::simulationArgument = levelList[0];
                     globals::setCurrentState(globals::Simulation);
                 } else if (CheckCollisionPointRec(GetMousePosition(), filterBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Filter button Clicked
                     globals::setCurrentState(globals::LevelFilter);
@@ -153,6 +168,13 @@ int main(void)
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
                     globals::setCurrentState(globals::MainMenu);
                 }
+
+                //User wants to replay a level
+                if (testListView.isClicked()){
+                    globals::simulationArgument = testListView.getClicked();
+                    globals::setCurrentState(globals::Simulation);
+                }
+
             } break;
 
             case globals::Simulation: {
@@ -214,7 +236,7 @@ int main(void)
                 case globals::LevelFilter: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                     DrawText("LevelFilter_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
+                     DrawText("LevelFilter_placeholder", originVector.x, originVector.y, 25, WHITE);
 
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
                 } break;
@@ -237,9 +259,9 @@ int main(void)
                 case globals::History: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                    DrawText("history_placeholder", originVector.x, originVector.y, 25, DARKGRAY);
-
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
+
+                    testListView.DrawListView();
                 } break;
 
                 case globals::Simulation: {
@@ -271,7 +293,6 @@ int main(void)
                         //call simulation class that I(Ellen) have not made yet
                     }
 
-                
                 } break;
 
                 case globals :: Hints: {
@@ -297,11 +318,20 @@ int main(void)
     //--------------------------------------------------------------------------------------
     UnloadTexture(backButton_T); //Free up mem again
     UnloadTexture(titleScreenLogo_T);
+    UnloadTexture(genericDarkenedBackground_T);
     UnloadTexture(mainMenuBackground_T);
     UnloadTexture(historyButton_T);
     UnloadTexture(playButton_T);
     UnloadTexture(filterButton_T);
-    UnloadTexture(exitButton_T);    
+    UnloadTexture(exitButton_T);
+    UnloadTexture(tankSprite);
+    UnloadTexture(target);
+    UnloadTexture(hint);
+    UnloadTexture(simulate);
+    UnloadTexture(castle);
+    UnloadTexture(damaged);
+    UnloadTexture(replay);
+    UnloadTexture(main);
 
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
