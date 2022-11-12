@@ -35,7 +35,7 @@ public:
         float vy = (dy - (0.5f * level->gravity * t * t)) / t;  // solve for velY
         
         level->initVelocity.y = vy;
-        level->solution = "The answer is " + std::to_string(vy);
+        level->solution = vy;
         
         return level;
     }

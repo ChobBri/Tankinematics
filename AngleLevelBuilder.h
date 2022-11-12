@@ -73,7 +73,7 @@ public:
             float angle = atanf(tan) * RAD2DEG;
 
             level->angle = angle;
-            level->solution = "The answer is " + std::to_string(angle);
+            level->solution = angle;
 
             legalLevel = true;
         } while (!legalLevel);

@@ -41,7 +41,7 @@ public:
             float a = 2 * (dy - iVel.y * t) / (t*t);  // solve for gravity
 
             level->gravity = a;
-            level->solution = "The answer is " + std::to_string(a);
+            level->solution = a;
         }
         else
         {
@@ -56,7 +56,7 @@ public:
             float a = 2 * (dy - level->initVelocity.y * t)/(t*t);  // solve for gravity
 
             level->gravity = a;
-            level->solution = "The answer is " + std::to_string(a);
+            level->solution = a;
         }
         
         return level;

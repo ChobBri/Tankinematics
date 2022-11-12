@@ -72,7 +72,7 @@ public:
             float vx = dx / t;
             
             level->initVelocity.x = vx;
-            level->solution = "The answer is " + std::to_string(vx);
+            level->solution = vx;
 
             legalLevel = true;
         } while (!legalLevel);
