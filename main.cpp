@@ -7,12 +7,9 @@
 
 #include "raylib.h"
 #include "PersistentData.hpp"
-<<<<<<< HEAD
 #include "sim.h"
-=======
 #include "TextBox.hpp"
 #include "ListView.hpp"
->>>>>>> 0f5e70e831e44e4337face164d621b5a3c9c4e8e
 #include <string.h>
 #include <stdlib.h>
 #include <iostream>
@@ -23,14 +20,11 @@ namespace globals {
         static gameStates currentState = Title;
         static bool quitFlag = false;
         int frameCounter = 0;
-<<<<<<< HEAD
         //for simulation
         int flag = 0;
         bool pause = 0;
-=======
         int simCheck = 0;
         Level simulationArgument;
->>>>>>> 0f5e70e831e44e4337face164d621b5a3c9c4e8e
 
         void setCurrentState(globals::gameStates newState){
             globals::currentState = newState;
@@ -128,7 +122,6 @@ int main(void)
 
     Vector2 circHint = {screenWidth/2, screenHeight/2};
 
-<<<<<<< HEAD
     //simulation class initialized 
     Vector2 iniPos = {(infoBox.x + infoBox.width)/3 + 150, 350};
     simulation pj(screenWidth, screenHeight, 9.8, 45, 80, iniPos);
@@ -136,9 +129,10 @@ int main(void)
     Vector2 bulletPos = {0,0};
     Vector2 tarPos = {720,tankPos.y-rand};
 
+    ///////////////////
+
 
     //--------------------------------------------------------------------------------------
-=======
 
     //Next two lines will eventually be replaced by Roy's levelHistory
     vector<Level> levelList;
@@ -149,8 +143,6 @@ int main(void)
 
     levelList[0].successfulAttempts = 20000;
 
-
->>>>>>> 0f5e70e831e44e4337face164d621b5a3c9c4e8e
 
     // Main game loop
     while (!WindowShouldClose() && !globals::quitFlag)        // Detect window close button or ESC key or set quitFlag to true
@@ -329,14 +321,7 @@ int main(void)
                     DrawTexture(hint, hintBP.x, hintBP.y, WHITE);
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
 
-<<<<<<< HEAD
-=======
-                    if (globals::simCheck == 1)
-                    {
-                        //call simulation class that I(Ellen) have not made yet
-                    }
 
->>>>>>> 0f5e70e831e44e4337face164d621b5a3c9c4e8e
                 } break;
 
                 case globals :: Hints: {
