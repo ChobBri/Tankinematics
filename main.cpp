@@ -138,7 +138,7 @@ int main(void)
     vector<Level> levelList;
     levelList = PersistentData::loadLevels();
 
-    ListView testListView(240, 30, 480, 480, 3, levelList);
+    ListView testListView(240, 30, 480, 480, 10, levelList);
 
 
     levelList[0].successfulAttempts = 20000;

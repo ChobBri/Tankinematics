@@ -48,7 +48,7 @@ public:
             // get actual speed
             float speed = sqrtf(speedsqrd);
             level->initSpeed = speed;
-            level->solution = "The answer is " + std::to_string(speed);
+            level->solution = speed;
             legalLevel = true;
         } while (!legalLevel);
         
