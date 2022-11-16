@@ -7,15 +7,19 @@
 #include "raylib.h"
 #include "raygui.h"
 #include "PersistentData.hpp"
+#include "sim.h"
 #include <string.h>
 #include <stdlib.h>
 
+
 namespace globals {
-        enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, Hints};
+        enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, Hints, actualSimulation};
         static gameStates currentState = Title;
         static bool quitFlag = false;
         int frameCounter = 0;
-        int simCheck = 0;
+        //for simulation
+        int flag = 0;
+        bool pause = 0;
 
         void setCurrentState(globals::gameStates newState){
             globals::currentState = newState;
@@ -26,6 +30,7 @@ namespace globals {
 int main(void)
 {
     PersistentData::debugLevel();
+    
 
     // Initialization
     //--------------------------------------------------------------------------------------
@@ -34,6 +39,8 @@ int main(void)
     const int targetFPS = 60; //BE CAREFUL IF CHANGING: this value is used in calculating time delays, for animations, etc.
     const int titleScreenTime = 2; 
     const Vector2 originVector = {0, 0}; 
+
+    
 
     InitWindow(screenWidth, screenHeight, "Tankinematics!");
     SetTargetFPS(targetFPS);
@@ -110,12 +117,19 @@ int main(void)
 
     Vector2 circHint = {screenWidth/2, screenHeight/2};
 
+    //simulation class initialized 
+    Vector2 iniPos = {(infoBox.x + infoBox.width)/3 + 150, 350};
+    simulation pj(screenWidth, screenHeight, 9.8, 45, 80, iniPos);
+
+    Vector2 bulletPos = {0,0};
+    Vector2 tarPos = {720,tankPos.y-rand};
+
+
     //--------------------------------------------------------------------------------------
 
     // Main game loop
     while (!WindowShouldClose() && !globals::quitFlag)        // Detect window close button or ESC key or set quitFlag to true
     {
-        
         switch(globals::currentState) { //Calculations / variable changes to be performed depending on state. This switch case doesn't handle drawing.
             case globals::Title: {
                 globals::frameCounter++;
@@ -163,10 +177,25 @@ int main(void)
                     globals::setCurrentState(globals::Hints);
                 }
                 else if (CheckCollisionPointRec(GetMousePosition(), simulateBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-                    globals::setCurrentState(globals::Success);
-                    globals :: simCheck = 1;
+                    globals::setCurrentState(globals::actualSimulation);
+
+
                 }
             } break;
+            case globals:: actualSimulation:{
+                
+                if(!(globals::pause)) bulletPos = pj.getPosition(bulletPos);
+
+                if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                    globals::setCurrentState(globals::Simulation);
+                    //something to return to previous state I guess, maybe level saving history or something, right now, only 1 simulation possible
+                }
+                //checking if it was a success
+                else if (globals:: flag == 1){
+                    globals::setCurrentState(globals::Success);
+                    globals::flag = 0;
+                } 
+            }break;
             case globals::Hints:{
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
                     globals::setCurrentState(globals::Simulation);
@@ -248,7 +277,8 @@ int main(void)
                     DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41)); 
                     DrawTextureV(tankSprite, tankPos, WHITE);
                     DrawTexture(castle,670, 145, WHITE);
-                    DrawTexture(target, 720, tankPos.y-rand, RED);
+                    //DrawTexture(target, 720, tankPos.y-rand, RED);
+                    DrawCircleV (tarPos, 20, RED);
                     
 
                     DrawText(distance,screenWidth/3, tankPos.y+95,25, WHITE);
@@ -266,12 +296,6 @@ int main(void)
                     DrawTexture(hint, hintBP.x, hintBP.y, WHITE);
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
 
-                    if (globals::simCheck == 1)
-                    {
-                        //call simulation class that I(Ellen) have not made yet
-                    }
-
-                
                 } break;
 
                 case globals :: Hints: {
@@ -283,6 +307,40 @@ int main(void)
                     //placeholder
                     DrawText("Use the Equation: --------", screenWidth/2 - 160, 250,25, BLACK);
                 } break;
+
+                case globals::actualSimulation:{
+                    DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
+
+                    DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41)); 
+                    DrawTextureV(tankSprite, tankPos, WHITE);
+                    DrawTexture(castle,670, 145, WHITE);
+                    //DrawTexture(target, 720, tankPos.y-rand, RED);
+                    DrawCircleV (tarPos, 20, RED);
+                    
+
+                    DrawText(distance,screenWidth/3, tankPos.y+95,25, WHITE);
+                    DrawText(height,screenWidth/3+200, tankPos.y+95,25, WHITE);
+
+                    //placeholder for input
+                    DrawRectangleRec(infoBox, ColorFromHSV(55, 0.23, 0.97));
+                    DrawText(infoGrav,infoBox.x+20, infoBox.y+20, 19, BLACK);
+                    DrawText(infoInitVel,infoBox.x+20, infoBox.y+50, 19, BLACK);
+
+                    DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
+
+                    //simulation stuff all down here
+                    DrawRectangleLinesEx(pj.getProj(),  10.0, RED);
+                    if (pj.targetConfirm(field.y,tarPos)) globals::flag =1;
+
+                    //defeat could also be another screen, and then something to revert to previous state
+                    if (pj.failConfirm(field.y)){
+                        DrawText("Not quite ...", (screenWidth/3), (screenHeight/3), 40, BLACK);
+                        globals:: pause = 1;
+                    }
+                    
+                    
+
+                }break;
 
                 default: {
                     //error, shouldn't get here
