@@ -8,24 +8,17 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "Level.h"
 
 using namespace std;
 
-class level{
-    int lvlNum;
-public:
-    bool isEqual(level lvl1);
-    level();
-    level(int lvlNum);
-    int getLvlNum();
-};
 
 class levelHistory{
-    vector<level> allLevels;
+    vector<Level> allLevels;
 
 public:
-    vector<level> getAllLevels();
-    void addLevel(level lvl);
-    void moveToTop(level lvl, int position);
+    vector<Level> getAllLevels();
+    void addLevel(Level lvl);
+    void moveToTop(Level lvl, int position);
 };
 #endif //LEVELHISTORY_LVLHISTORY_H
