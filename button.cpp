@@ -12,6 +12,10 @@ Button::Button(float posX, float posY, float height, float width, char* textureN
 void Button::drawButton(Color userColour){
     DrawRectangleRec(bounds, userColour);
 }
+void Button::drawButton(Color userColor, char* textureName){
+    texture = LoadTexture(textureName);
+    drawButton(userColor);
+}
 void Button::drawLabel(char* text, int fontSize, Color fontColour){
     DrawText(text, bounds.x, bounds.y, fontSize, fontColour);
 }
