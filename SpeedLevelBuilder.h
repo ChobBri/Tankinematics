@@ -49,6 +49,8 @@ public:
             float speed = sqrtf(speedsqrd);
             level->initSpeed = speed;
             level->solution = speed;
+            level->angleOverVel = true;
+            
             legalLevel = true;
         } while (!legalLevel);
         

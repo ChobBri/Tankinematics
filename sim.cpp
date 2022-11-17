@@ -8,51 +8,164 @@
 #include <cmath>
 #include <iostream>
 #include "sim.h"
+#include "GravityLevelBuilder.h"
+#include "AngleLevelBuilder.h"
+#include "SpeedLevelBuilder.h"
+#include "InitVelXLevelBuilder.h"
+#include "InitVelYLevelBuilder.h"
 
-simulation::simulation(int width, int height, float gravi, float ang, float initvel, Vector2 init){
-    screenWidth = width;
-    screenHeight = height;
+Simulation::Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D& castleSprite_, Texture2D& simSprite_, Texture2D& hintSprite_, Texture2D& backBSprite_)
+{
+    genericBackground = genericBkg_;
+    tankSprite = tankSprite_;
+    castleSprite = castleSprite_;
+    simulationSprite = simSprite_;
+    hintSprite = hintSprite_;
+    backButtonSprite = backBSprite_;
 
-    //placeholders
-    grav = gravi;
-    angle  = ang;
-    initVel = initvel;
-    initPos = init;
-    acTime = 0;
-    //initial position
-    proj = {init.x, init.y, 15, 20};
-    
+    infoBox = {30, 70, 240, 90};
+    tankPos = {(infoBox.x + infoBox.width)/3, 350};
+    field = {0, tankPos.y+90, (float)GetScreenWidth(),(float) GetScreenHeight()}; 
 }
 
-Vector2 simulation::getPosition (Vector2 projectilePosition){
-    acTime += GetFrameTime();
-    projectilePosition.x = initPos.x + initVel*cos(angle)*acTime;
-    projectilePosition.y =  initPos.y - initVel*sin(angle)*acTime + grav*acTime*acTime/2.0;
+Vector2 Simulation::getPosition (float t){
+    Vector2 projectilePosition;
+    if(level->angleOverVel){
+        projectilePosition.x = initPos.x + speed*cos(angle * DEG2RAD)*t;
+        projectilePosition.y =  initPos.y - speed*sin(angle * DEG2RAD)*t + gravity*t*t/2.0f;
+    } else {
+        projectilePosition.x = initPos.x + initVelX*t;
+        projectilePosition.y =  initPos.y - initVelY*t + gravity*t*t/2.0f;
+    }
+    
     //the box
-    proj = {projectilePosition.x, projectilePosition.y, 15, 20};
     return projectilePosition;
 }
 
-bool simulation::targetConfirm(int lineY, Vector2 targetLoc){
-    if (proj.y > lineY+10){
+bool Simulation::targetConfirm(){
+    if (proj.y > field.y+10){
         return false;
     }
 
-    return (CheckCollisionCircleRec(targetLoc, 20, proj));
-
+    return (CheckCollisionCircleRec(targetPos, 20, proj));
 }
 
-bool simulation:: failConfirm(int lineY){
-    if (proj.y > lineY+5){
-        return true;
-    }
-    else{
-        return false;
-    }
+bool Simulation:: failConfirm(){
+    return proj.y > field.y+5;
 }
 
-Rectangle simulation:: getProj(){
+Rectangle Simulation:: getProj(){
     return proj;
+}
+
+void Simulation::initSimulation(){
+     GravityLevelBuilder lb;
+    // AngleLevelBuilder lb;
+    // SpeedLevelBuilder lb;
+
+    // InitVelXLevelBuilder lb;
+    // InitVelYLevelBuilder lb;
+    level = lb.BuildLevel();
+    gravity = -level->gravity;
+    angle = level->angle;
+    speed = level->initSpeed;
+    initVelX = level->initVelocity.x;
+    initVelY = level->initVelocity.y;
+    initPos = {240.0f, 350.0};  // treat this as the offset to level data
+    acTime = 0.0f;
+    proj = {initPos.x, initPos.y, 15.0f, 20.0f};
+    targetPos = {initPos.x + level->targetPosition.x, initPos.y - level->targetPosition.y};
+}
+
+void Simulation::initSimulation(Level* lvl){
+    level = lvl;
+    gravity = -level->gravity;
+    angle = level->angle;
+    speed = level->initSpeed;
+    initVelX = level->initVelocity.x;
+    initVelY = level->initVelocity.y;
+    initPos = {240.0f, 350.0};  // treat this as the offset to level data
+    acTime = 0.0f;
+    proj = {initPos.x, initPos.y, 15.0f, 20.0f};
+    targetPos = {initPos.x + level->targetPosition.x, initPos.y - level->targetPosition.y};
+}
+
+void Simulation::playSimulation(){
+    acTime = 0.0f;
+    isSimulating = true;
+    proj.x = initPos.x;
+    proj.y = initPos.y;
+}
+
+void Simulation::resetSimulation(){
+    acTime = 0.0f;
+    isSimulating = false;
+    proj.x = initPos.x;
+    proj.y = initPos.y;
+}
+
+bool Simulation::simulating(){
+    return isSimulating;
+}
+
+void Simulation::update()
+{
+    if (isSimulating){
+        acTime += GetFrameTime();
+        Vector2 projectilePosition = getPosition(acTime * 3.0f);  // playing at 3 times the speed
+        proj = {projectilePosition.x, projectilePosition.y, 15, 20};
+
+        if(failConfirm()){
+            isSimulating = false;
+        }
+    } 
+}
+
+void Simulation::display(){
+    const int screenWidth = GetScreenWidth();
+    //const int screenHeight = GetScreenHeight();
+
+    DrawTexture(genericBackground, 0, 0, WHITE);
+
+    
+    DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41)); 
+    DrawTextureV(tankSprite, tankPos, WHITE);
+    DrawTexture(castleSprite,670, 145, WHITE);
+    //DrawTexture(target, 720, tankPos.y-rand, RED);
+    DrawCircleV (targetPos, 20, RED);
+    
+    char distance[] = {"Distance: 60km"};
+    char height[] = {"Height: 50km"};
+    char infoGrav[] = {"Gravity: 9.8m/s^2"};
+    char infoInitVel[] = {"Initial Velocity: 30 m/s"};
+    DrawText(distance,screenWidth/3, tankPos.y+95,25, WHITE);
+    DrawText(height,screenWidth/3+200, tankPos.y+95,25, WHITE);
+
+    //placeholder for input
+    DrawRectangleRec(infoBox, ColorFromHSV(55, 0.23, 0.97));
+    DrawText(infoGrav,infoBox.x+20, infoBox.y+20, 19, BLACK);
+    DrawText(infoInitVel,infoBox.x+20, infoBox.y+50, 19, BLACK);
+
+    if(!isSimulating){
+        Rectangle input = {(float)screenWidth/2, 35, 100, 20};
+        char inputW[] = {"Angle: "};
+        DrawText(inputW, input.x -80, input.y, 25, WHITE);
+        DrawRectangleRec(input, WHITE);
+    }
+
+    Vector2 backBP = {10, 490};
+    Vector2 hintBP = {900, 10};
+    Vector2 simulateBP = {screenWidth/2.5f+20, 70};
+    
+    if(!isSimulating){
+        DrawTexture(simulationSprite, simulateBP.x, simulateBP.y, WHITE);
+        DrawTexture(hintSprite, hintBP.x, hintBP.y, WHITE);
+    }
+    DrawTexture(backButtonSprite, backBP.x, backBP.y, WHITE);
+
+    if(isSimulating) DrawRectangleLinesEx(proj,  10.0, RED);
+    
+    //DrawText("Not quite ...", (screenWidth/3), (screenHeight/3), 40, BLACK);
 }
 
 // void simulation::drawSim(){

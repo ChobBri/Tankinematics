@@ -19,7 +19,7 @@
 
 
 namespace globals {
-        enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, Hints, actualSimulation};
+        enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, Hints};
         static gameStates currentState = Title;
         static bool quitFlag = false; //Setting to true will close game
         int frameCounter = 0; //Currently only used to stay on title screen for specified number of frames
@@ -107,14 +107,6 @@ int main(void)
     Vector2 tankPos = {(infoBox.x + infoBox.width)/3, 350};
     Rectangle field = {0, tankPos.y+90, screenWidth, screenHeight}; 
 
-    //not working input field
-    Rectangle input = {screenWidth/2, 35, 100, 20};
-    char inputW[] = {"Angle: "};
-
-    char distance[] = {"Distance: 60km"};
-    char height[] = {"Height: 50km"};
-    char infoGrav[] = {"Gravity: 9.8m/s^2"};
-    char infoInitVel[] = {"Initial Velocity: 30 m/s"};
 
     int rand = GetRandomValue(20,200);
 
@@ -123,11 +115,7 @@ int main(void)
     Vector2 circHint = {screenWidth/2, screenHeight/2};
 
     //simulation class initialized 
-    Vector2 iniPos = {(infoBox.x + infoBox.width)/3 + 150, 350};
-    simulation pj(screenWidth, screenHeight, 9.8, 45, 80, iniPos);
-
-    Vector2 bulletPos = {0,0};
-    Vector2 tarPos = {720,tankPos.y-rand};
+    Simulation pj(genericDarkenedBackground_T,tankSprite, castle, simulate, hint, backButton_T);
 
     ///////////////////
 
@@ -156,6 +144,7 @@ int main(void)
                     globals::quitFlag = true;
                 } else if (CheckCollisionPointRec(GetMousePosition(), playBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Play button clicked
                     globals::simulationArgument = levelHistObj.allLevels[0];
+                    pj.initSimulation();
                     globals::setCurrentState(globals::Simulation);
                 } else if (CheckCollisionPointRec(GetMousePosition(), filterBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Filter button Clicked
                     globals::setCurrentState(globals::LevelFilter);
@@ -194,32 +183,33 @@ int main(void)
             } break;
 
             case globals::Simulation: {
-                if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
-                    globals::setCurrentState(globals::MainMenu);
+                pj.update();
+                if (!pj.simulating())
+                {
+                    if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                        globals::setCurrentState(globals::MainMenu);
+                    }
+                    else if (CheckCollisionPointRec(GetMousePosition(), hintBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                        globals::setCurrentState(globals::Hints);
+                    }
+                    else if (CheckCollisionPointRec(GetMousePosition(), simulateBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                        pj.playSimulation();
+                    }
                 }
-                else if (CheckCollisionPointRec(GetMousePosition(), hintBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-                    globals::setCurrentState(globals::Hints);
-                }
-                else if (CheckCollisionPointRec(GetMousePosition(), simulateBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-                    globals::setCurrentState(globals::actualSimulation);
-
-
+                else
+                {
+                    if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                        pj.resetSimulation();
+                        //something to return to previous state I guess, maybe level saving history or something, right now, only 1 simulation possible
+                    }
+                    //checking if it was a success
+                    else if (pj.targetConfirm()){
+                        pj.resetSimulation();
+                        globals::setCurrentState(globals::Success);
+                    } 
                 }
             } break;
-            case globals:: actualSimulation:{
-                
-                if(!(globals::pause)) bulletPos = pj.getPosition(bulletPos);
 
-                if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
-                    globals::setCurrentState(globals::Simulation);
-                    //something to return to previous state I guess, maybe level saving history or something, right now, only 1 simulation possible
-                }
-                //checking if it was a success
-                else if (globals:: flag == 1){
-                    globals::setCurrentState(globals::Success);
-                    globals::flag = 0;
-                } 
-            }break;
             case globals::Hints:{
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
                     globals::setCurrentState(globals::Simulation);
@@ -296,31 +286,7 @@ int main(void)
                 } break;
 
                 case globals::Simulation: {
-                    DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
-
-                    DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41)); 
-                    DrawTextureV(tankSprite, tankPos, WHITE);
-                    DrawTexture(castle,670, 145, WHITE);
-                    //DrawTexture(target, 720, tankPos.y-rand, RED);
-                    DrawCircleV (tarPos, 20, RED);
-                    
-
-                    DrawText(distance,screenWidth/3, tankPos.y+95,25, WHITE);
-                    DrawText(height,screenWidth/3+200, tankPos.y+95,25, WHITE);
-
-                    //placeholder for input
-                    DrawRectangleRec(infoBox, ColorFromHSV(55, 0.23, 0.97));
-                    DrawText(infoGrav,infoBox.x+20, infoBox.y+20, 19, BLACK);
-                    DrawText(infoInitVel,infoBox.x+20, infoBox.y+50, 19, BLACK);
-
-                    DrawText(inputW, input.x -80, input.y, 25, WHITE);
-                    DrawRectangleRec(input, WHITE);
-
-                    DrawTexture(simulate, simulateBP.x, simulateBP.y, WHITE);
-                    DrawTexture(hint, hintBP.x, hintBP.y, WHITE);
-                    DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
-
-
+                    pj.display();
                 } break;
 
                 case globals :: Hints: {
@@ -332,40 +298,6 @@ int main(void)
                     //placeholder
                     DrawText("Use the Equation: --------", screenWidth/2 - 160, 250,25, BLACK);
                 } break;
-
-                case globals::actualSimulation:{
-                    DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
-
-                    DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41)); 
-                    DrawTextureV(tankSprite, tankPos, WHITE);
-                    DrawTexture(castle,670, 145, WHITE);
-                    //DrawTexture(target, 720, tankPos.y-rand, RED);
-                    DrawCircleV (tarPos, 20, RED);
-                    
-
-                    DrawText(distance,screenWidth/3, tankPos.y+95,25, WHITE);
-                    DrawText(height,screenWidth/3+200, tankPos.y+95,25, WHITE);
-
-                    //placeholder for input
-                    DrawRectangleRec(infoBox, ColorFromHSV(55, 0.23, 0.97));
-                    DrawText(infoGrav,infoBox.x+20, infoBox.y+20, 19, BLACK);
-                    DrawText(infoInitVel,infoBox.x+20, infoBox.y+50, 19, BLACK);
-
-                    DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
-
-                    //simulation stuff all down here
-                    DrawRectangleLinesEx(pj.getProj(),  10.0, RED);
-                    if (pj.targetConfirm(field.y,tarPos)) globals::flag =1;
-
-                    //defeat could also be another screen, and then something to revert to previous state
-                    if (pj.failConfirm(field.y)){
-                        DrawText("Not quite ...", (screenWidth/3), (screenHeight/3), 40, BLACK);
-                        globals:: pause = 1;
-                    }
-                    
-                    
-
-                }break;
 
                 default: {
                     //error, shouldn't get here

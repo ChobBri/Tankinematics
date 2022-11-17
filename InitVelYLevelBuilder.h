@@ -27,15 +27,32 @@ public:
         // Set hints
         std::vector<std::string> hints = {"do this", "try that", "how bout this"};
         level->hints = hints;
-
+        
         // Solve for solution
+        bool legalLevel = false;
+        do {
+        
+
         float dx = level->targetPosition.x - level->tankPosition.x;
         float t = dx/(level->initVelocity.x);
         float dy = level->targetPosition.y - level->tankPosition.y;
         float vy = (dy - (0.5f * level->gravity * t * t)) / t;  // solve for velY
+
+        // If level is bad, rebuild
+        if (vy > 150.0f)
+        {
+            initConstruct(level);
+            continue;
+        }
+               
         
         level->initVelocity.y = vy;
         level->solution = vy;
+        level->angleOverVel = false;
+
+        legalLevel = true;
+        } while (!legalLevel);
+
         
         return level;
     }

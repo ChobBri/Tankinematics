@@ -21,6 +21,7 @@ public:
         // Initialize level construction
         initConstruct(level);
 
+
         // Set level type
         level->levelType = Level::LevelType::InitVelX;
         
@@ -74,6 +75,7 @@ public:
             level->initVelocity.x = vx;
             level->solution = vx;
 
+            level->angleOverVel = false;
             legalLevel = true;
         } while (!legalLevel);
         
