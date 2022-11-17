@@ -123,7 +123,7 @@ void PersistentData::debugLevel(){
     vector<Level> levelList;
 
     //Generate 11 levels with varying information
-    for (int i = 0; i < 11; i++){
+    for (int i = 0; i < 10; i++){
         levelList.emplace_back(Level{
             1.2f*i, //gravity
             15.0f*i, //angle
@@ -134,8 +134,8 @@ void PersistentData::debugLevel(){
             {{("SAMPLEHINT" + to_string(i))}, {"Test hint"}}, //hints
             (float)2.1*i, //solution
             true, //angle override flag
-            2*i, //total attempts
-            i, //successful attempts
+            i, //total attempts
+            i*4, //successful attempts
             42.0f*i, //time
             (i%2) ? Level::LevelType::Gravity : Level::LevelType::Angle //level type 
         });
