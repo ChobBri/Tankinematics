@@ -8,6 +8,11 @@
 #include <cmath>
 #include <iostream>
 #include "sim.h"
+#include "GravityLevelBuilder.h"
+#include "AngleLevelBuilder.h"
+#include "SpeedLevelBuilder.h"
+#include "InitVelXLevelBuilder.h"
+#include "InitVelYLevelBuilder.h"
 
 Simulation::Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D& castleSprite_, Texture2D& simSprite_, Texture2D& hintSprite_, Texture2D& backBSprite_)
 {
@@ -25,27 +30,28 @@ Simulation::Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D
 
 Vector2 Simulation::getPosition (float t){
     Vector2 projectilePosition;
-    projectilePosition.x = initPos.x + speed*cos(angle)*t;
-    projectilePosition.y =  initPos.y - speed*sin(angle)*t + gravity*t*t/2.0f;
+    if(level->angleOverVel){
+        projectilePosition.x = initPos.x + speed*cos(angle * DEG2RAD)*t;
+        projectilePosition.y =  initPos.y - speed*sin(angle * DEG2RAD)*t + gravity*t*t/2.0f;
+    } else {
+        projectilePosition.x = initPos.x + initVelX*t;
+        projectilePosition.y =  initPos.y - initVelY*t + gravity*t*t/2.0f;
+    }
+    
     //the box
     return projectilePosition;
 }
 
-bool Simulation::targetConfirm(int lineY, Vector2 targetLoc){
-    if (proj.y > lineY+10){
+bool Simulation::targetConfirm(){
+    if (proj.y > field.y+10){
         return false;
     }
 
-    return (CheckCollisionCircleRec(targetLoc, 20, proj));
+    return (CheckCollisionCircleRec(targetPos, 20, proj));
 }
 
-bool Simulation:: failConfirm(int lineY){
-    if (proj.y > lineY+5){
-        return true;
-    }
-    else{
-        return false;
-    }
+bool Simulation:: failConfirm(){
+    return proj.y > field.y+5;
 }
 
 Rectangle Simulation:: getProj(){
@@ -53,33 +59,49 @@ Rectangle Simulation:: getProj(){
 }
 
 void Simulation::initSimulation(){
-    gravity = 9.8f;
-    angle = 45.0f;
-    speed = 80.0f;
-    initPos = {240.0f, 350.0f};
+     GravityLevelBuilder lb;
+    // AngleLevelBuilder lb;
+    // SpeedLevelBuilder lb;
+
+    // InitVelXLevelBuilder lb;
+    // InitVelYLevelBuilder lb;
+    level = lb.BuildLevel();
+    gravity = -level->gravity;
+    angle = level->angle;
+    speed = level->initSpeed;
+    initVelX = level->initVelocity.x;
+    initVelY = level->initVelocity.y;
+    initPos = {240.0f, 350.0};  // treat this as the offset to level data
     acTime = 0.0f;
     proj = {initPos.x, initPos.y, 15.0f, 20.0f};
-    int rand = GetRandomValue(20,200);
-    targetPos = {720, initPos.y - rand};
-
+    targetPos = {initPos.x + level->targetPosition.x, initPos.y - level->targetPosition.y};
 }
 
 void Simulation::initSimulation(Level* lvl){
-    gravity = 9.8f;
-    angle = 45.0f;
-    speed = 80.0f;
-    initPos = {240.0f, 350.0f};
+    level = lvl;
+    gravity = -level->gravity;
+    angle = level->angle;
+    speed = level->initSpeed;
+    initVelX = level->initVelocity.x;
+    initVelY = level->initVelocity.y;
+    initPos = {240.0f, 350.0};  // treat this as the offset to level data
     acTime = 0.0f;
     proj = {initPos.x, initPos.y, 15.0f, 20.0f};
-    int rand = GetRandomValue(20,200);
-    targetPos = {720, initPos.y - rand};
-
-    
+    targetPos = {initPos.x + level->targetPosition.x, initPos.y - level->targetPosition.y};
 }
 
 void Simulation::playSimulation(){
     acTime = 0.0f;
     isSimulating = true;
+    proj.x = initPos.x;
+    proj.y = initPos.y;
+}
+
+void Simulation::resetSimulation(){
+    acTime = 0.0f;
+    isSimulating = false;
+    proj.x = initPos.x;
+    proj.y = initPos.y;
 }
 
 bool Simulation::simulating(){
@@ -88,33 +110,20 @@ bool Simulation::simulating(){
 
 void Simulation::update()
 {
-    Vector2 backBP = {10, 490};
-    Vector2 hintBP = {900, 10};
-    Vector2 simulateBP = {GetScreenWidth()/2.5f+20, 70};
-
-    Rectangle backBB = {backBP.x, backBP.y, 40, 40};
-    Rectangle hintBB = {hintBP.x, hintBP.y, 40,40};
-    Rectangle simulateBB = {simulateBP.x, simulateBP.y, 120, 40};
-
     if (isSimulating){
         acTime += GetFrameTime();
-        Vector2 projectilePosition = getPosition(acTime);
+        Vector2 projectilePosition = getPosition(acTime * 3.0f);  // playing at 3 times the speed
         proj = {projectilePosition.x, projectilePosition.y, 15, 20};
 
-        // if (targetConfirm(field.y, targetPos)) globals::flag =1;
-
-        // if (pj.failConfirm(field.y)){
-        //     DrawText("Not quite ...", (screenWidth/3), (screenHeight/3), 40, BLACK);
-        //     globals:: pause = 1;
-        // }
-    } else {
-        
-    }
+        if(failConfirm()){
+            isSimulating = false;
+        }
+    } 
 }
 
 void Simulation::display(){
     const int screenWidth = GetScreenWidth();
-    const int screenHeight = GetScreenHeight();
+    //const int screenHeight = GetScreenHeight();
 
     DrawTexture(genericBackground, 0, 0, WHITE);
 

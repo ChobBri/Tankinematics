@@ -10,9 +10,13 @@ class Simulation{
     private:
     
     Level* level;
+    
     float gravity;
     float angle;
     float speed;
+    float initVelX;
+    float initVelY;
+
     float acTime;
     Rectangle proj;
     Vector2 initPos;
@@ -22,7 +26,7 @@ class Simulation{
     Vector2 tankPos;
     Rectangle field; 
 
-    bool isSimulating = false;
+    bool isSimulating = false;//
 
     Texture2D genericBackground;
     Texture2D tankSprite;
@@ -36,9 +40,9 @@ class Simulation{
     //getting position
     Vector2 getPosition(float t);
     //checking if it hit the target
-    bool targetConfirm(int lineY, Vector2 targetLoc);
+    bool targetConfirm();
     //checking if it hit the ground
-    bool failConfirm(int lineY);
+    bool failConfirm();
     //the projectile --> maybe better animation? idk
     Rectangle getProj();
 
@@ -48,6 +52,7 @@ class Simulation{
     void display();
 
     void playSimulation();
+    void resetSimulation();
 
     bool simulating();
 

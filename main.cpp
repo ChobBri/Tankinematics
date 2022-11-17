@@ -16,7 +16,7 @@
 
 
 namespace globals {
-        enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, Hints, actualSimulation};
+        enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, Hints};
         static gameStates currentState = Title;
         static bool quitFlag = false;
         int frameCounter = 0;
@@ -107,14 +107,6 @@ int main(void)
     Vector2 tankPos = {(infoBox.x + infoBox.width)/3, 350};
     Rectangle field = {0, tankPos.y+90, screenWidth, screenHeight}; 
 
-    //not working input field
-    Rectangle input = {screenWidth/2, 35, 100, 20};
-    char inputW[] = {"Angle: "};
-
-    char distance[] = {"Distance: 60km"};
-    char height[] = {"Height: 50km"};
-    char infoGrav[] = {"Gravity: 9.8m/s^2"};
-    char infoInitVel[] = {"Initial Velocity: 30 m/s"};
 
     int rand = GetRandomValue(20,200);
 
@@ -124,9 +116,6 @@ int main(void)
 
     //simulation class initialized 
     Simulation pj(genericDarkenedBackground_T,tankSprite, castle, simulate, hint, backButton_T);
-
-    Vector2 bulletPos = {0,0};
-    Vector2 tarPos = {720,tankPos.y-rand};
 
     ///////////////////
 
@@ -210,16 +199,14 @@ int main(void)
                 }
                 else
                 {
-                    if(!(globals::pause)) bulletPos = {0.0f, 0.0f};
-                    //pj.getPosition(bulletPos)
                     if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
-                        globals::setCurrentState(globals::Simulation);
+                        pj.resetSimulation();
                         //something to return to previous state I guess, maybe level saving history or something, right now, only 1 simulation possible
                     }
                     //checking if it was a success
-                    else if (globals:: flag == 1){
+                    else if (pj.targetConfirm()){
+                        pj.resetSimulation();
                         globals::setCurrentState(globals::Success);
-                        globals::flag = 0;
                     } 
                 }
             } break;
@@ -312,40 +299,6 @@ int main(void)
                     //placeholder
                     DrawText("Use the Equation: --------", screenWidth/2 - 160, 250,25, BLACK);
                 } break;
-
-                case globals::actualSimulation:{
-                    // DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
-
-                    // DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41)); 
-                    // DrawTextureV(tankSprite, tankPos, WHITE);
-                    // DrawTexture(castle,670, 145, WHITE);
-                    // //DrawTexture(target, 720, tankPos.y-rand, RED);
-                    // DrawCircleV (tarPos, 20, RED);
-                    
-
-                    // DrawText(distance,screenWidth/3, tankPos.y+95,25, WHITE);
-                    // DrawText(height,screenWidth/3+200, tankPos.y+95,25, WHITE);
-
-                    // //placeholder for input
-                    // DrawRectangleRec(infoBox, ColorFromHSV(55, 0.23, 0.97));
-                    // DrawText(infoGrav,infoBox.x+20, infoBox.y+20, 19, BLACK);
-                    // DrawText(infoInitVel,infoBox.x+20, infoBox.y+50, 19, BLACK);
-
-                    // DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
-
-                    // //simulation stuff all down here
-                    // DrawRectangleLinesEx(pj.getProj(),  10.0, RED);
-                    // if (pj.targetConfirm(field.y,tarPos)) globals::flag =1;
-
-                    // //defeat could also be another screen, and then something to revert to previous state
-                    // if (pj.failConfirm(field.y)){
-                    //     DrawText("Not quite ...", (screenWidth/3), (screenHeight/3), 40, BLACK);
-                    //     globals:: pause = 1;
-                    // }
-                    
-                    
-
-                }break;
 
                 default: {
                     //error, shouldn't get here
