@@ -13,6 +13,7 @@
 #include "SpeedLevelBuilder.h"
 #include "InitVelXLevelBuilder.h"
 #include "InitVelYLevelBuilder.h"
+#include "lvlHistory.h"
 
 Simulation::Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D& castleSprite_, Texture2D& simSprite_, Texture2D& hintSprite_, Texture2D& backBSprite_)
 {
@@ -58,7 +59,7 @@ Rectangle Simulation:: getProj(){
     return proj;
 }
 
-void Simulation::initSimulation(){
+void Simulation::initSimulation(levelHistory& lh){
      GravityLevelBuilder lb;
     // AngleLevelBuilder lb;
     // SpeedLevelBuilder lb;
@@ -75,6 +76,9 @@ void Simulation::initSimulation(){
     acTime = 0.0f;
     proj = {initPos.x, initPos.y, 15.0f, 20.0f};
     targetPos = {initPos.x + level->targetPosition.x, initPos.y - level->targetPosition.y};
+    lh.addLevel(*level);
+
+
 }
 
 void Simulation::initSimulation(Level* lvl){

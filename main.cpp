@@ -143,8 +143,7 @@ int main(void)
                 if (CheckCollisionPointRec(GetMousePosition(), exitBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Exit Button Clicked
                     globals::quitFlag = true;
                 } else if (CheckCollisionPointRec(GetMousePosition(), playBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Play button clicked
-                    globals::simulationArgument = levelHistObj.allLevels[0];
-                    pj.initSimulation();
+                    pj.initSimulation(levelHistObj);
                     globals::setCurrentState(globals::Simulation);
                 } else if (CheckCollisionPointRec(GetMousePosition(), filterBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Filter button Clicked
                     globals::setCurrentState(globals::LevelFilter);
@@ -174,8 +173,7 @@ int main(void)
 
                 //User wants to replay a level
                 if (historyListView.isClicked() != -1){ 
-                    globals::simulationArgument = historyListView.getClicked(); //When sim is updated, replace this line with the next (commented-out) one
-                    //sim.initSim(historyListView.getClicked());
+                    pj.initSimulation(historyListView.getClicked());
                     levelHistObj.moveToTop(historyListView.isClicked());
                     globals::setCurrentState(globals::Simulation);
                 }

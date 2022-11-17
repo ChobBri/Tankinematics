@@ -5,6 +5,7 @@
 #include <string>
 #include "raylib.h"
 #include "Level.h"
+#include "lvlHistory.h"
 
 class Simulation{
     private:
@@ -46,7 +47,7 @@ class Simulation{
     //the projectile --> maybe better animation? idk
     Rectangle getProj();
 
-    void initSimulation();
+    void initSimulation(levelHistory&);
     void initSimulation(Level* lvl);
     void update();
     void display();

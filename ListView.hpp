@@ -13,12 +13,12 @@ class ListView{
         ListView(float, float, float, float, int, vector<Level>&);
         void DrawListView();
         int isClicked();
-        Level getClicked();
+        Level* getClicked();
     private:
         replayButton drawHistoryEntry(Level, int);
         vector<replayButton> replayButtonList;
         Rectangle bounds;
         int maxEntriesShown;
         vector<Level>* allEntries;
-        Level clicked;
+        Level* clicked;
 };

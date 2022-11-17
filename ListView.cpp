@@ -95,7 +95,7 @@ replayButton ListView::drawHistoryEntry(Level level, int position){
 int ListView::isClicked(){
     for (replayButton i : replayButtonList){
         if (CheckCollisionPointRec(GetMousePosition(), i.button) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-            clicked = (*allEntries)[i.index];
+            clicked = &(*allEntries)[i.index];
             return i.index; 
         }
     }
@@ -105,6 +105,6 @@ int ListView::isClicked(){
 /**
  * Returns the level corresponding to the replay button which was clicked.
 */
-Level ListView::getClicked(){
+Level* ListView::getClicked(){
     return clicked;
 }
