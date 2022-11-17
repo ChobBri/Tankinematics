@@ -17,7 +17,7 @@ class levelHistory{
     public:
         vector<Level> allLevels;
         vector<Level> getAllLevels();
-        void addLevel(Level lvl);
+        Level* addLevel(Level lvl);
         void moveToTop(int position);
 };
 #endif //LEVELHISTORY_LVLHISTORY_H

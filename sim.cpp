@@ -47,7 +47,9 @@ bool Simulation::targetConfirm(){
     if (proj.y > field.y+10){
         return false;
     }
-
+    if (CheckCollisionCircleRec(targetPos, 20, proj)){
+        level->successfulAttempts++;
+    }
     return (CheckCollisionCircleRec(targetPos, 20, proj));
 }
 
@@ -66,7 +68,14 @@ void Simulation::initSimulation(levelHistory& lh){
 
     // InitVelXLevelBuilder lb;
     // InitVelYLevelBuilder lb;
-    level = lb.BuildLevel();
+
+
+    level = lh.addLevel(*lb.BuildLevel()); //this works, and this is why (I think):
+    // LevelBuilder creates a level object on the heap, then pass a copy of that object
+    // to addLevel, which puts that copy in it's allLevels vector and returns a pointer 
+    // to the version which exists in allLevels vector. Then pj's level pointer is refering to
+    // the Level in levelHistory's allLevels vector. qed lol
+
     gravity = -level->gravity;
     angle = level->angle;
     speed = level->initSpeed;
@@ -76,8 +85,6 @@ void Simulation::initSimulation(levelHistory& lh){
     acTime = 0.0f;
     proj = {initPos.x, initPos.y, 15.0f, 20.0f};
     targetPos = {initPos.x + level->targetPosition.x, initPos.y - level->targetPosition.y};
-    lh.addLevel(*level);
-
 
 }
 
@@ -99,6 +106,7 @@ void Simulation::playSimulation(){
     isSimulating = true;
     proj.x = initPos.x;
     proj.y = initPos.y;
+    level->totalAttempts++;
 }
 
 void Simulation::resetSimulation(){

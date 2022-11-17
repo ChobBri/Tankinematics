@@ -11,11 +11,11 @@ vector<Level> levelHistory::getAllLevels() {
     return allLevels;
 }
 
-void levelHistory::addLevel(Level lvl) {
+Level* levelHistory::addLevel(Level lvl) {
     allLevels.insert(allLevels.begin(), lvl);
     if (allLevels.size() > MAX_SIZE)
         allLevels.resize(MAX_SIZE);
-    return;
+    return &allLevels[0];
 }
 
 void levelHistory::moveToTop(int position){
