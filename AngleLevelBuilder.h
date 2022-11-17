@@ -66,7 +66,7 @@ public:
             }
             else
             {
-                tan = fmaxf(tan1, tan2);
+                tan = fminf(tan1, tan2);
             }
 
             // Find angle
