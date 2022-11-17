@@ -13,10 +13,7 @@ void PersistentData::saveLevels(vector<Level> source){
     ofstream outputStream(PersistentData::relativeLevelFilePath, ios::out);
     for (Level i : source){
         //Write fields which can't contain any spaces
-        outputStream << i.gravity << '\t' << i.angle << '\t' << i.initSpeed <<'\t' << i.initVelocity.x << '\t' << i.initVelocity.y << '\t' << i.tankPosition.x << '\t' << i.tankPosition.y << '\t' << i.targetPosition.x << '\t' << i.targetPosition.y << '\t' << i.angleOverVel << '\t' << i.totalAttempts << '\t' << i.successfulAttempts << '\t' << i.time << '\t' << i.levelType << '\n';
-        
-        //Write solution (which can contain spaces)
-        outputStream << i.solution << '\n';
+        outputStream << i.gravity << '\t' << i.angle << '\t' << i.initSpeed <<'\t' << i.initVelocity.x << '\t' << i.initVelocity.y << '\t' << i.tankPosition.x << '\t' << i.tankPosition.y << '\t' << i.targetPosition.x << '\t' << i.targetPosition.y << '\t' << i.angleOverVel << '\t' << i.totalAttempts << '\t' << i.successfulAttempts << '\t' << i.time << '\t' << i.levelType << '\t' << i.solution << '\n';
         
         //Write number of hints
         outputStream << to_string(i.hints.size());
@@ -52,7 +49,7 @@ vector<Level> PersistentData::loadLevels(){
     Vector2 tankPosition = {0.0f, 0.0f};
     Vector2 targetPosition = {0.0f, 0.0f};
     std::vector<std::string> hints;
-    std::string solution;
+    float solution;
     bool angleOverVel = true;
     int totalAttempts = 0;
     int successfulAttempts = 0;
@@ -64,7 +61,7 @@ vector<Level> PersistentData::loadLevels(){
         
         //Extract all variables which don't (can't) contain spaces
         std::istringstream issLine(line);
-        issLine >> gravity >> angle >> initSpeed >> initVelocity.x >> initVelocity.y >> tankPosition.x >> tankPosition.y >> targetPosition.x >> targetPosition.y >> angleOverVel >> totalAttempts >> successfulAttempts >> time >> levelTypeString;
+        issLine >> gravity >> angle >> initSpeed >> initVelocity.x >> initVelocity.y >> tankPosition.x >> tankPosition.y >> targetPosition.x >> targetPosition.y >> angleOverVel >> totalAttempts >> successfulAttempts >> time >> levelTypeString >> solution;
         
         //convert (string)levelType to levelType 
         switch (stoi(levelTypeString))
@@ -85,10 +82,6 @@ vector<Level> PersistentData::loadLevels(){
             levelType = Level::LevelType::InitVelY;
             break;
         }
-
-        //Second line is "solution" string
-        std::getline(inputStream, line);
-        solution = line;
 
         //Push level with all EXCEPT hints populated
         importedLevels.emplace_back(Level{
@@ -130,7 +123,7 @@ void PersistentData::debugLevel(){
     vector<Level> levelList;
 
     //Generate 11 levels with varying information
-    for (int i = 0; i < 11; i++){
+    for (int i = 0; i < 10; i++){
         levelList.emplace_back(Level{
             1.2f*i, //gravity
             15.0f*i, //angle
@@ -139,10 +132,10 @@ void PersistentData::debugLevel(){
             {3.0f*i, 1.23f*i}, //tank position
             {1.1f*i, 6.1f*i}, //target position
             {{("SAMPLEHINT" + to_string(i))}, {"Test hint"}}, //hints
-            ("SAMPLESOLUTION" + to_string(i)), //solution
+            (float)2.1*i, //solution
             true, //angle override flag
-            2*i, //total attempts
-            i, //successful attempts
+            i, //total attempts
+            i*4, //successful attempts
             42.0f*i, //time
             (i%2) ? Level::LevelType::Gravity : Level::LevelType::Angle //level type 
         });

@@ -31,7 +31,7 @@ const char* levelTypeToString(Level::LevelType levelType) {
  * IMPORTANT: pass the address of levelHistory's allLevels vector.
  * That way, any changes to levelHistory are reflected in listView.
 */
-ListView::ListView(int x, int y, int width, int height, int maxEntries, vector<Level>& allLevels){
+ListView::ListView(float x, float y, float width, float height, int maxEntries, vector<Level>& allLevels){
     bounds = Rectangle{x, y, width, height};
     maxEntriesShown = maxEntries;
     allEntries = &allLevels;
@@ -44,7 +44,7 @@ ListView::ListView(int x, int y, int width, int height, int maxEntries, vector<L
 void ListView::DrawListView(){
     DrawRectangleRec(bounds, DARKGRAY);
 
-    int position = 1;
+    int position = 0;
     replayButtonList.clear();
     replayButton temp;
 
@@ -52,7 +52,7 @@ void ListView::DrawListView(){
         temp = drawHistoryEntry(i, position);
         replayButtonList.push_back(temp);
         position++;
-        if (position > maxEntriesShown) break;
+        if (position >= maxEntriesShown) break;
     }
 }
 
@@ -60,12 +60,12 @@ void ListView::DrawListView(){
  * Draws a history entry for given level in specified postion. 
  * 
  * Returns a replayButton struct which represents the position of
- * a rpelay button and the index that it corresponds to in allLevels.
+ * a replay button and its index in allLevels vector.
 */
 replayButton ListView::drawHistoryEntry(Level level, int position){
     //for readability
     int leftBoxEdge = 244;
-    int topBoxEdge = (32 + (position - 1) * 48);
+    int topBoxEdge = (32 + position * 48);
     int boxWidth = 472;
     int boxHeight = 44;
     int fontSize = 4;
@@ -83,23 +83,23 @@ replayButton ListView::drawHistoryEntry(Level level, int position){
     DrawRectangleRec(playButton, LIME);
     DrawText(TextFormat("Replay"), leftBoxEdge + boxWidth - 90, topBoxEdge + 8, 26, WHITE);
 
-    replayButton returnValue{replayButton{playButton, position - 1}};
+    replayButton returnValue{replayButton{playButton, position}};
 
     return returnValue;
 }
 
 /**
- * Returns whether any of the replay buttons have been clicked.
+ * Returns index of level which was selected to be replayed
+ * IF none, returns -1
 */
-bool ListView::isClicked(){
+int ListView::isClicked(){
     for (replayButton i : replayButtonList){
         if (CheckCollisionPointRec(GetMousePosition(), i.button) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
             clicked = (*allEntries)[i.index];
-            cout << "returned true";
-            return true; 
+            return i.index; 
         }
     }
-    return false;
+    return -1;
 }
 
 /**

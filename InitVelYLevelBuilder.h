@@ -47,12 +47,13 @@ public:
                
         
         level->initVelocity.y = vy;
-        level->solution = "The answer is " + std::to_string(vy);
+        level->solution = vy;
         level->angleOverVel = false;
 
         legalLevel = true;
         } while (!legalLevel);
 
+        
         return level;
     }
 };

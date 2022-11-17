@@ -10,9 +10,9 @@ struct replayButton {
 
 class ListView{
     public:
-        ListView(int, int, int, int, int, vector<Level>&);
+        ListView(float, float, float, float, int, vector<Level>&);
         void DrawListView();
-        bool isClicked();
+        int isClicked();
         Level getClicked();
     private:
         replayButton drawHistoryEntry(Level, int);

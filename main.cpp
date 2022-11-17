@@ -6,10 +6,13 @@
 
 
 #include "raylib.h"
+
 #include "PersistentData.hpp"
 #include "sim.h"
 #include "TextBox.hpp"
 #include "ListView.hpp"
+#include "lvlHistory.h"
+
 #include <string.h>
 #include <stdlib.h>
 #include <iostream>
@@ -18,8 +21,9 @@
 namespace globals {
         enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, Hints};
         static gameStates currentState = Title;
-        static bool quitFlag = false;
-        int frameCounter = 0;
+        static bool quitFlag = false; //Setting to true will close game
+        int frameCounter = 0; //Currently only used to stay on title screen for specified number of frames
+
         //for simulation
         int flag = 0;
         bool pause = 0;
@@ -33,9 +37,7 @@ namespace globals {
 }
 
 int main(void)
-{
-    PersistentData::debugLevel();
-    
+{   
 
     // Initialization
     //--------------------------------------------------------------------------------------
@@ -43,9 +45,7 @@ int main(void)
     const int screenHeight = 1080/2;
     const int targetFPS = 60; //BE CAREFUL IF CHANGING: this value is used in calculating time delays, for animations, etc.
     const int titleScreenTime = 2; 
-    const Vector2 originVector = {0, 0}; 
-
-    
+    const Vector2 originVector = {0, 0}; //Frequently used position in debugging
 
     InitWindow(screenWidth, screenHeight, "Tankinematics!");
     SetTargetFPS(targetFPS);
@@ -122,15 +122,12 @@ int main(void)
 
     //--------------------------------------------------------------------------------------
 
-    //Next two lines will eventually be replaced by Roy's levelHistory
-    vector<Level> levelList;
-    levelList = PersistentData::loadLevels();
+    //Create levelHistory object
+    levelHistory levelHistObj = levelHistory();
+    levelHistObj.allLevels = PersistentData::loadLevels();
 
-    ListView testListView(240, 30, 480, 480, 3, levelList);
-
-
-    levelList[0].successfulAttempts = 20000;
-
+    //Create level history view
+    ListView historyListView(240, 30, 480, 480, 10, levelHistObj.allLevels);
 
     // Main game loop
     while (!WindowShouldClose() && !globals::quitFlag)        // Detect window close button or ESC key or set quitFlag to true
@@ -146,7 +143,7 @@ int main(void)
                 if (CheckCollisionPointRec(GetMousePosition(), exitBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Exit Button Clicked
                     globals::quitFlag = true;
                 } else if (CheckCollisionPointRec(GetMousePosition(), playBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Play button clicked
-                    globals::simulationArgument = levelList[0];
+                    globals::simulationArgument = levelHistObj.allLevels[0];
                     pj.initSimulation();
                     globals::setCurrentState(globals::Simulation);
                 } else if (CheckCollisionPointRec(GetMousePosition(), filterBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Filter button Clicked
@@ -176,8 +173,10 @@ int main(void)
                 }
 
                 //User wants to replay a level
-                if (testListView.isClicked()){
-                    globals::simulationArgument = testListView.getClicked();
+                if (historyListView.isClicked() != -1){ 
+                    globals::simulationArgument = historyListView.getClicked(); //When sim is updated, replace this line with the next (commented-out) one
+                    //sim.initSim(historyListView.getClicked());
+                    levelHistObj.moveToTop(historyListView.isClicked());
                     globals::setCurrentState(globals::Simulation);
                 }
 
@@ -283,7 +282,7 @@ int main(void)
 
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
 
-                    testListView.DrawListView();
+                    historyListView.DrawListView();
                 } break;
 
                 case globals::Simulation: {
@@ -311,7 +310,8 @@ int main(void)
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    UnloadTexture(backButton_T); //Free up mem again
+    //Free up memory used to store textures
+    UnloadTexture(backButton_T); 
     UnloadTexture(titleScreenLogo_T);
     UnloadTexture(genericDarkenedBackground_T);
     UnloadTexture(mainMenuBackground_T);
@@ -327,6 +327,9 @@ int main(void)
     UnloadTexture(damaged);
     UnloadTexture(replay);
     UnloadTexture(main);
+
+    //Save levels back to the disk
+    PersistentData::saveLevels(levelHistObj.allLevels);
 
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------

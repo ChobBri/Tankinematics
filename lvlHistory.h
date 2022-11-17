@@ -14,11 +14,10 @@ using namespace std;
 
 
 class levelHistory{
-    vector<Level> allLevels;
-
-public:
-    vector<Level> getAllLevels();
-    void addLevel(Level lvl);
-    void moveToTop(Level lvl, int position);
+    public:
+        vector<Level> allLevels;
+        vector<Level> getAllLevels();
+        void addLevel(Level lvl);
+        void moveToTop(int position);
 };
 #endif //LEVELHISTORY_LVLHISTORY_H
