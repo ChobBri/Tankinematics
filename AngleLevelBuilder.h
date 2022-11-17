@@ -74,7 +74,7 @@ public:
 
             level->angle = angle;
             level->solution = "The answer is " + std::to_string(angle);
-
+            level->angleOverVel = true;
             legalLevel = true;
         } while (!legalLevel);
         

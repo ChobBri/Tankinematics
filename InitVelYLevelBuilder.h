@@ -36,7 +36,7 @@ public:
         
         level->initVelocity.y = vy;
         level->solution = "The answer is " + std::to_string(vy);
-        
+        level->angleOverVel = false;
         return level;
     }
 };

@@ -49,6 +49,7 @@ public:
             float speed = sqrtf(speedsqrd);
             level->initSpeed = speed;
             level->solution = "The answer is " + std::to_string(speed);
+            level->angleOverVel = true;
             legalLevel = true;
         } while (!legalLevel);
         
