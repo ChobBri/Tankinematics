@@ -76,7 +76,8 @@ replayButton ListView::drawHistoryEntry(Level level, int position){
     //Draw level stats
     DrawText(TextFormat("Total Attempts: %d", level.totalAttempts),             leftBoxEdge+4, topBoxEdge+4 + 0,    fontSize, BLACK);
     DrawText(TextFormat("Successful Attempts: %d", level.successfulAttempts),   leftBoxEdge+4, topBoxEdge+4 + 10,   fontSize, BLACK);
-    DrawText(levelTypeToString(level.levelType),                                leftBoxEdge+4, topBoxEdge+4 + 20,   fontSize, BLACK);
+    DrawText(TextFormat("replayButton's index value: %d", position),            leftBoxEdge+4, topBoxEdge+4 + 20,   fontSize, BLACK);
+    DrawText(levelTypeToString(level.levelType),                                leftBoxEdge+4, topBoxEdge+4 + 30,   fontSize, BLACK);
 
     //Draw play button and text
     Rectangle playButton = {leftBoxEdge + boxWidth - 94, topBoxEdge + 4, 90, boxHeight-8};
@@ -95,7 +96,7 @@ replayButton ListView::drawHistoryEntry(Level level, int position){
 int ListView::isClicked(){
     for (replayButton i : replayButtonList){
         if (CheckCollisionPointRec(GetMousePosition(), i.button) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
-            clicked = &((*allEntries)[i.index]);
+            clicked = &((*allEntries)[0]); //this is just the address of allLevels[0], doesnt matter what's in that position
             return i.index; 
         }
     }
@@ -106,5 +107,5 @@ int ListView::isClicked(){
  * Returns the level corresponding to the replay button which was clicked.
 */
 Level* ListView::getClicked(){
-    return clicked;
+    return clicked; //Could instead just return address of allLevels[0]
 }

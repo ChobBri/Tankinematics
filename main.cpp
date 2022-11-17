@@ -129,7 +129,7 @@ int main(void)
     //Create level history view
     ListView historyListView(240, 30, 480, 480, 10, levelHistObj.allLevels);
 
-    
+
 
     // Main game loop
     while (!WindowShouldClose() && !globals::quitFlag)        // Detect window close button or ESC key or set quitFlag to true
@@ -176,6 +176,7 @@ int main(void)
                 //User wants to replay a level
                 if (historyListView.isClicked() != -1){ 
                     pj.initSimulation(historyListView.getClicked());
+                    
                     levelHistObj.moveToTop(historyListView.isClicked());
                     globals::setCurrentState(globals::Simulation);
                 }
