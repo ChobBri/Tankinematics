@@ -5,11 +5,11 @@
 namespace LevelConstraints
 {
     static constexpr float MIN_ANGLE = 20.0f;
-    static constexpr float MAX_ANGLE = 80.0f;
+    static constexpr float MAX_ANGLE = 70.0f;
     static constexpr float MIN_SPEED = 50.0f;
     static constexpr float MAX_SPEED = 100.0f;
     static constexpr float MIN_GRAVITY = 10.0f;  // absolute value
-    static constexpr float MAX_GRAVITY = 60.0f;  // absolute value
+    static constexpr float MAX_GRAVITY = 50.0f;  // absolute value
     static constexpr float MIN_INIT_VELX = 100.0f;
     static constexpr float MAX_INIT_VELX = 500.0f;
     static constexpr float MIN_INIT_VELY = 50.0f;
