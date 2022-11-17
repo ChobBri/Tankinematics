@@ -29,10 +29,4 @@ struct Level
     float time = 0.0f; // in seconds
     LevelType levelType = LevelType::Gravity;
 };
-
-bool isEqual(Level lvl1, Level otherLvl){
-    return (lvl1.gravity == otherLvl.gravity && lvl1.angle == otherLvl.angle && lvl1.initSpeed == otherLvl.initSpeed
-    && lvl1.tankPosition.x == otherLvl.tankPosition.x && lvl1.tankPosition.y == otherLvl.tankPosition.y && 
-    lvl1.targetPosition.x == otherLvl.targetPosition.x && lvl1.targetPosition.y == otherLvl.targetPosition.y);
-}
 #endif
