@@ -12,6 +12,8 @@
 #include "TextBox.hpp"
 #include "ListView.hpp"
 #include "lvlHistory.h"
+#include "button.h"
+#include "lvlFilter.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -88,6 +90,7 @@ int main(void)
     Vector2 mainBP = {510, 250};
 
 
+
     //Define button bounds (BBs)
     //Rectangles which are under their respective textures. Done this way so you can use intersection-detection methods which use rectangles and points. 
     Rectangle historyBB = {historyBP.x, historyBP.y, 250, 40};
@@ -129,7 +132,19 @@ int main(void)
     //Create level history view
     ListView historyListView(240, 30, 480, 480, 10, levelHistObj.allLevels);
 
-
+    // Define level filter buttons (gravity, angle, x velocity, y velocity, speed)
+    Vector2 gravityBP = {screenWidth/3, screenHeight/7};
+    Vector2 angleBP = {screenWidth/3, 2*screenHeight/7};
+    Vector2 velocityXBP = {screenWidth/3, 3*screenHeight/7};
+    Vector2 velocityYBP = {screenWidth/3, 4*screenHeight/7};
+    Vector2 speedBP = {screenWidth/3, 5*screenHeight/7};
+    
+    Button toggleGravity = {gravityBP.x, gravityBP.y, 50, 50};
+    Button toggleAngle = {angleBP.x, angleBP.y, 50, 50};
+    Button toggleVelocityX = {velocityXBP.x, velocityXBP.y, 50, 50};
+    Button toggleVelocityY = {velocityYBP.x, velocityYBP.y, 50, 50};
+    Button toggleSpeed = {speedBP.x, speedBP.y, 50, 50};
+    LvlFilter lf;
 
     // Main game loop
     while (!WindowShouldClose() && !globals::quitFlag)        // Detect window close button or ESC key or set quitFlag to true
@@ -157,6 +172,46 @@ int main(void)
             case globals::LevelFilter: {
                 if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
                     globals::setCurrentState(globals::MainMenu);
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), toggleGravity.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                    lf.updateArray(true,false,false,false,false);
+                    toggleGravity.setState(true);
+                    toggleAngle.setState(false);
+                    toggleVelocityX.setState(false);
+                    toggleVelocityY.setState(false);
+                    toggleSpeed.setState(false);
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), toggleAngle.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                    lf.updateArray(false,true,false,false,false);
+                    toggleAngle.setState(true);
+                    toggleGravity.setState(false);
+                    toggleVelocityX.setState(false);
+                    toggleVelocityY.setState(false);
+                    toggleSpeed.setState(false);
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), toggleVelocityX.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                    lf.updateArray(false,false,true,false,false);
+                    toggleVelocityX.setState(true);
+                    toggleAngle.setState(false);
+                    toggleGravity.setState(false);
+                    toggleVelocityY.setState(false);
+                    toggleSpeed.setState(false);
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), toggleVelocityY.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                    lf.updateArray(false,false,false,true,false);
+                    toggleVelocityY.setState(true);
+                    toggleAngle.setState(false);
+                    toggleVelocityX.setState(false);
+                    toggleGravity.setState(false);
+                    toggleSpeed.setState(false);
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), toggleSpeed.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                    lf.updateArray(false,false,false,false,true);
+                    toggleSpeed.setState(true);
+                    toggleAngle.setState(false);
+                    toggleVelocityX.setState(false);
+                    toggleVelocityY.setState(false);
+                    toggleGravity.setState(false);
                 }
             } break;
 
@@ -258,7 +313,24 @@ int main(void)
                 case globals::LevelFilter: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                     DrawText("LevelFilter_placeholder", originVector.x, originVector.y, 25, WHITE);
+                    // DrawText("LevelFilter_placeholder", originVector.x, originVector.y, 25, WHITE);
+                    static bool init = true;
+                    if (init) {
+                        toggleGravity.setState(true);
+                        init = false;
+                    }
+                    toggleAngle.drawState();
+                    toggleSpeed.drawState();
+                    toggleVelocityX.drawState();
+                    toggleVelocityY.drawState();
+                    toggleGravity.drawState();
+
+                    DrawText("Select parameter to isolate and solve for:", 20,20, 25, WHITE);
+                    DrawText("Gravity", gravityBP.x+50+50, gravityBP.y, 50, WHITE);
+                    DrawText("Angle", gravityBP.x+50+50, angleBP.y, 50, WHITE);
+                    DrawText("Velocity (x)", gravityBP.x+50+50, velocityXBP.y, 50, WHITE);
+                    DrawText("Velocity (y)", gravityBP.x+50+50, velocityYBP.y, 50, WHITE);
+                    DrawText("Speed", gravityBP.x+50+50, speedBP.y, 50, WHITE);
 
                     DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
                 } break;

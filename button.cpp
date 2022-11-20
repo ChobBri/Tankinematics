@@ -19,6 +19,14 @@ void Button::drawButton(Color userColor, char* textureName){
 void Button::drawLabel(char* text, int fontSize, Color fontColour){
     DrawText(text, bounds.x, bounds.y, fontSize, fontColour);
 }
+void Button::drawState() {
+    if (state) {
+        drawButton(GREEN);
+    }
+    else {
+        drawButton(RED);
+    }
+}
 bool Button::isClicked(Vector2 mousePosition){
     if(CheckCollisionPointRec(mousePosition, bounds))
         return true;
