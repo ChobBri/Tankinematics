@@ -6,6 +6,7 @@
 #include "raylib.h"
 #include "Level.h"
 #include "lvlHistory.h"
+#include "LvlFilter.h"
 
 
 class Simulation{
@@ -52,7 +53,7 @@ class Simulation{
     
     Vector2 getTargetPos();
 
-    void initSimulation(levelHistory&);
+    void initSimulation(levelHistory&, LvlFilter&);
     void initSimulation(Level* lvl);
     void update();
     void display();

@@ -159,7 +159,7 @@ int main(void)
                 if (CheckCollisionPointRec(GetMousePosition(), exitBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Exit Button Clicked
                     globals::quitFlag = true;
                 } else if (CheckCollisionPointRec(GetMousePosition(), playBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Play button clicked
-                    pj.initSimulation(levelHistObj);
+                    pj.initSimulation(levelHistObj, lf);
                     globals::setCurrentState(globals::Simulation);
                 } else if (CheckCollisionPointRec(GetMousePosition(), filterBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Filter button Clicked
                     globals::setCurrentState(globals::LevelFilter);
@@ -237,7 +237,7 @@ int main(void)
                     else if (CheckCollisionPointRec(GetMousePosition(), hintBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
                         globals::setCurrentState(globals::Hints);
                     }
-                    else if (CheckCollisionPointRec(GetMousePosition(), simulateBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                    else if ((CheckCollisionPointRec(GetMousePosition(), simulateBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) || IsKeyPressed(KEY_ENTER)){
                         pj.playSimulation();
                     }
                 }
