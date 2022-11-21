@@ -7,6 +7,7 @@
 #include "Level.h"
 #include "lvlHistory.h"
 
+
 class Simulation{
     private:
     
@@ -22,10 +23,12 @@ class Simulation{
     Rectangle proj;
     Vector2 initPos;
     Vector2 targetPos;
+ 
 
     Rectangle infoBox;
     Vector2 tankPos;
     Rectangle field; 
+    
 
     bool isSimulating = false;//
 
