@@ -26,14 +26,11 @@
 Rectangle input = {960/2, 35, 100, 20};
 TextBox userIn(input.x, input.y, input.width, input.height);
 
-Simulation::Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D& castleSprite_, Texture2D& simSprite_, Texture2D& hintSprite_, Texture2D& backBSprite_)
+Simulation::Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D& castleSprite_)
 {
     genericBackground = genericBkg_;
     tankSprite = tankSprite_;
     castleSprite = castleSprite_;
-    simulationSprite = simSprite_;
-    hintSprite = hintSprite_;
-    backButtonSprite = backBSprite_;
 
     infoBox = {30, 70, 240, 90};
     tankPos = {(infoBox.x + infoBox.width)/3, 350};
@@ -323,16 +320,6 @@ void Simulation::display(){
         userIn.drawBox();
        
     }
-
-    Vector2 backBP = {10, 490};
-    Vector2 hintBP = {900, 10};
-    Vector2 simulateBP = {screenWidth/2.5f+20, 70};
-    
-    if(!isSimulating){
-        DrawTexture(simulationSprite, simulateBP.x, simulateBP.y, WHITE);
-        DrawTexture(hintSprite, hintBP.x, hintBP.y, WHITE);
-    }
-    DrawTexture(backButtonSprite, backBP.x, backBP.y, WHITE);
 
     if(isSimulating) DrawRectangleLinesEx(proj,  10.0, RED);
     

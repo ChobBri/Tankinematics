@@ -52,71 +52,46 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Tankinematics!");
     SetTargetFPS(targetFPS);
 
-    //Load sprites / backgrounds
+    //Backgrounds
     Texture2D titleScreenLogo_T = LoadTexture("resources/titleScreenLogo.png");
     Texture2D genericDarkenedBackground_T = LoadTexture("resources/genericDarkenedBackground.png");
-    
-    Texture2D backButton_T = LoadTexture("resources/backButton.png");
-
     Texture2D mainMenuBackground_T = LoadTexture("resources/mainMenuBackground.png");
-    Texture2D historyButton_T = LoadTexture("resources/historyButton.png");
-    Texture2D playButton_T = LoadTexture("resources/playButton.png");
-    Texture2D filterButton_T = LoadTexture("resources/filterButton.png");
-    Texture2D exitButton_T = LoadTexture("resources/exitButton.png");
 
-    //for sim
+    //Textures for simulation
     Texture2D tankSprite = LoadTexture("resources/tankSprite.png");
     Texture2D target = LoadTexture("resources/Target.png");
-    Texture2D hint = LoadTexture("resources/HINT.png");
-    Texture2D simulate = LoadTexture("resources/simulate.png");
     Texture2D castle = LoadTexture("resources/castle.png");
     Texture2D damaged = LoadTexture("resources/damaged.png");
 
-    //for success
-    Texture2D replay = LoadTexture("resources/Replay.png");
-    Texture2D main = LoadTexture("resources/main.png");
+    //Buttons
+    Button backButton = Button(10, 490, 40, 40, "resources/backButton.png");
+    Button historyButton = Button(355, 400, 250, 40, "resources/historyButton.png");
+    Button playButton = Button(355, 270, 120, 120, "resources/playButton.png");
+    Button filterButton = Button(485, 270, 120, 120, "resources/filterButton.png");
+    Button exitButton = Button(10, 490, 40, 40, "resources/exitButton.png");
+    Button replayButton = Button(410, 250, 60, 60, "resources/Replay.png");
+    Button mainMenuButton = Button(510, 250, 60, 60, "resources/main.png");
+    Button hintButton = Button(900, 10, 40, 40, "resources/HINT.png");
+    Button simulateButton = Button(screenWidth/2.5+20, 70, 120, 40, "resources/simulate.png");
 
-    //Define button placement vectors (BPs). BPs are used to define where to draw textures which overlay onto rectangles. 
-    Vector2 historyBP = {355, 400};
-    Vector2 playBP = {355, 270};
-    Vector2 filterBP = {485, 270};
-    Vector2 exitBP = {10, 490};
-    Vector2 backBP = {10, 490};
 
-    Vector2 hintBP = {900, 10};
-    Vector2 simulateBP = {screenWidth/2.5+20, 70};
 
-    Vector2 replayBP = {410, 250};
-    Vector2 mainBP = {510, 250};
-
-    // Define level filter buttons (gravity, angle, x velocity, y velocity, speed)
+    //STILL NEEED TO SWAP OVER.
     Vector2 gravityBP = {50, screenHeight/7};
     Vector2 angleBP = {50, 2*screenHeight/7};
     Vector2 velocityXBP = {50, 3*screenHeight/7};
     Vector2 velocityYBP = {50, 4*screenHeight/7};
-    Vector2 speedBP = {50, 5*screenHeight/7};   
+    Vector2 speedBP = {50, 5*screenHeight/7};  
 
 
-    //Define button bounds (BBs)
-    //Rectangles which are under their respective textures. Done this way so you can use intersection-detection methods which use rectangles and points. 
-    Rectangle historyBB = {historyBP.x, historyBP.y, 250, 40};
-    Rectangle playBB = {playBP.x, playBP.y, 120, 120};
-    Rectangle filterBB = {filterBP.x, filterBP.y, 120, 120};
-    Rectangle exitBB = {exitBP.x, exitBP.y, 40, 40};
-    Rectangle backBB = {backBP.x, backBP.y, 40, 40};
-    //placement of the buttons may be slightly off, have to fix
-    Rectangle hintBB = {hintBP.x, hintBP.y, 40,40};
-    Rectangle simulateBB = {simulateBP.x, simulateBP.y, 120, 40};
-    Rectangle replayBB = {replayBP.x, replayBP.y, 60, 60};
-    Rectangle mainBB = {mainBP.x, mainBP.y, 60,60};
-    // Create level filter buttons
     Button toggleGravity = {gravityBP.x, gravityBP.y, 50, 50};
     toggleGravity.setState(true); // Initialize gravity field to true when game starts (need at least one field to be true)
     Button toggleAngle = {angleBP.x, angleBP.y, 50, 50};
     Button toggleVelocityX = {velocityXBP.x, velocityXBP.y, 50, 50};
     Button toggleVelocityY = {velocityYBP.x, velocityYBP.y, 50, 50};
     Button toggleSpeed = {speedBP.x, speedBP.y, 50, 50};
-    
+
+
 
     //Define the placements for simulation -- can be replaced with calling from level builder later
     Rectangle infoBox = {30, 70, 240, 90};
@@ -130,7 +105,7 @@ int main(void)
 
 
     //simulation class initialized 
-    Simulation pj(genericDarkenedBackground_T,tankSprite, castle, simulate, hint, backButton_T);
+    Simulation pj(genericDarkenedBackground_T,tankSprite, castle);
 
 
 
@@ -156,20 +131,20 @@ int main(void)
             } break;
 
             case globals::MainMenu: {
-                if (CheckCollisionPointRec(GetMousePosition(), exitBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Exit Button Clicked
+                if (exitButton.isClicked()){ //Exit Button Clicked
                     globals::quitFlag = true;
-                } else if (CheckCollisionPointRec(GetMousePosition(), playBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Play button clicked
+                } else if (playButton.isClicked()){ //Play button clicked
                     pj.initSimulation(levelHistObj, lf);
                     globals::setCurrentState(globals::Simulation);
-                } else if (CheckCollisionPointRec(GetMousePosition(), filterBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Filter button Clicked
+                } else if (filterButton.isClicked()){ //Filter button Clicked
                     globals::setCurrentState(globals::LevelFilter);
-                } else if (CheckCollisionPointRec(GetMousePosition(), historyBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //History button clicked
+                } else if (historyButton.isClicked()){ //History button clicked
                     globals::setCurrentState(globals::History);
                 }
             } break;
 
             case globals::LevelFilter: {
-                if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                if (backButton.isClicked()){ //Back button clicked
                     globals::setCurrentState(globals::MainMenu);
                 }
                 else if (CheckCollisionPointRec(GetMousePosition(), toggleGravity.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
@@ -205,15 +180,15 @@ int main(void)
             } break;
 
             case globals::Success: {
-                if (CheckCollisionPointRec(GetMousePosition(), replayBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //replay button clicked
+                if (replayButton.isClicked()){ //replay button clicked
                     globals::setCurrentState(globals::Simulation);
                 }
-                else if (CheckCollisionPointRec(GetMousePosition(), mainBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+                else if (mainMenuButton.isClicked())
                     globals::setCurrentState(globals:: MainMenu);
             } break;
 
             case globals::History: {
-                if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                if (backButton.isClicked()){ //Back button clicked
                     globals::setCurrentState(globals::MainMenu);
                 }
 
@@ -231,19 +206,19 @@ int main(void)
                 pj.update();
                 if (!pj.simulating())
                 {
-                    if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                    if (backButton.isClicked()){ //Back button clicked
                         globals::setCurrentState(globals::MainMenu);
                     }
-                    else if (CheckCollisionPointRec(GetMousePosition(), hintBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+                    else if (hintButton.isClicked()){
                         globals::setCurrentState(globals::Hints);
                     }
-                    else if ((CheckCollisionPointRec(GetMousePosition(), simulateBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) || IsKeyPressed(KEY_ENTER)){
+                    else if (simulateButton.isClicked() || IsKeyPressed(KEY_ENTER)){
                         pj.playSimulation();
                     }
                 }
                 else
                 {
-                    if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                    if (backButton.isClicked()){ //Back button clicked
                         pj.resetSimulation();
                         //something to return to previous state I guess, maybe level saving history or something, right now, only 1 simulation possible
                     }
@@ -256,7 +231,7 @@ int main(void)
             } break;
 
             case globals::Hints:{
-                if (CheckCollisionPointRec(GetMousePosition(), backBB) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ //Back button clicked
+                if (backButton.isClicked()){ //Back button clicked
                     globals::setCurrentState(globals::Simulation);
                 }
             }
@@ -292,10 +267,10 @@ int main(void)
                 case globals::MainMenu: {
                     DrawTexture(mainMenuBackground_T, 0, 0, WHITE);
 
-                    DrawTexture(playButton_T, playBP.x, playBP.y, WHITE);
-                    DrawTexture(filterButton_T, filterBP.x, filterBP.y, WHITE);
-                    DrawTexture(historyButton_T, historyBP.x, historyBP.y, WHITE);
-                    DrawTexture(exitButton_T, exitBP.x, exitBP.y, WHITE);
+                    playButton.drawButton();
+                    filterButton.drawButton();
+                    historyButton.drawButton();
+                    exitButton.drawButton();
 
                 } break;
 
@@ -315,7 +290,7 @@ int main(void)
                     DrawText("Velocity (y)", velocityYBP.x+50+50, velocityYBP.y, 50, WHITE);
                     DrawText("Speed", speedBP.x+50+50, speedBP.y, 50, WHITE);
 
-                    DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
+                    backButton.drawButton();
                 } break;
                 
                 case globals::Success: {
@@ -330,27 +305,32 @@ int main(void)
                     DrawTexture(damaged,670+12, 145, WHITE);
                     DrawCircleV (pj.getTargetPos(), 20, RED);
 
-                    DrawTexture(main, mainBB.x, mainBB.y, WHITE);
-                    DrawTexture(replay, replayBB.x, replayBB.y, WHITE);
+                    mainMenuButton.drawButton();
+                    replayButton.drawButton();
                 } break;
 
                 case globals::History: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                    DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
+                    backButton.drawButton();
 
                     historyListView.DrawListView();
                 } break;
 
                 case globals::Simulation: {
                     pj.display();
+                    backButton.drawButton();
+                    if (!pj.simulating()){
+                        hintButton.drawButton();
+                        simulateButton.drawButton();
+                    }
                 } break;
 
                 case globals :: Hints: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
                     DrawCircleV(circHint, 200, GOLD);
-                    DrawTexture(backButton_T, backBP.x, backBP.y, WHITE);
+                    backButton.drawButton();
                     DrawText("Hints", screenWidth/2-40, 80, 40, BLACK);
                     //placeholder
                     DrawText("Use the Equation: --------", screenWidth/2 - 160, 250,25, BLACK);
@@ -368,23 +348,13 @@ int main(void)
     // De-Initialization
     //--------------------------------------------------------------------------------------
     //Free up memory used to store textures
-    UnloadTexture(backButton_T); 
     UnloadTexture(titleScreenLogo_T);
     UnloadTexture(genericDarkenedBackground_T);
     UnloadTexture(mainMenuBackground_T);
-    UnloadTexture(historyButton_T);
-    UnloadTexture(playButton_T);
-    UnloadTexture(filterButton_T);
-    UnloadTexture(exitButton_T);
     UnloadTexture(tankSprite);
     UnloadTexture(target);
-    UnloadTexture(hint);
-    UnloadTexture(simulate);
     UnloadTexture(castle);
     UnloadTexture(damaged);
-    UnloadTexture(replay);
-    UnloadTexture(main);
-
     //Save levels back to the disk
     PersistentData::saveLevels(levelHistObj.allLevels);
 
