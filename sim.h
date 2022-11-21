@@ -44,7 +44,7 @@ class Simulation{
     bool targetConfirm();
     //checking if it hit the ground
     bool failConfirm();
-    //the projectile --> maybe better animation? idk
+ 
     Rectangle getProj();
 
     void initSimulation(levelHistory&);

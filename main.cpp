@@ -120,7 +120,6 @@ int main(void)
     //simulation class initialized 
     Simulation pj(genericDarkenedBackground_T,tankSprite, castle, simulate, hint, backButton_T);
 
-    ///////////////////
 
 
     //--------------------------------------------------------------------------------------
@@ -342,6 +341,7 @@ int main(void)
                     DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41));
                     DrawTextureV(tankSprite, tankPos, WHITE);
                     DrawTextureV(tankSprite, tankPos, WHITE); 
+
                     //castle moves, fix later
                     DrawTexture(damaged,670, 145, WHITE);
                     DrawTexture(target, 720, tankPos.y-rand, RED);
