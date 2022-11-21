@@ -32,12 +32,9 @@ class Simulation{
     Texture2D genericBackground;
     Texture2D tankSprite;
     Texture2D castleSprite;
-    Texture2D simulationSprite;
-    Texture2D hintSprite;
-    Texture2D backButtonSprite;
     
     public:
-    Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D& castleSprite_, Texture2D& simSprite_, Texture2D& hintSprite_, Texture2D& backBSprite_);
+    Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D& castleSprite_);
     //getting position
     Vector2 getPosition(float t);
     //checking if it hit the target
