@@ -7,6 +7,13 @@ LvlFilter::LvlFilter(){
     filters[3] = false;
     filters[4] = false;
 }
+LvlFilter::LvlFilter(bool isGrav, bool isAngle, bool isVelX, bool isVelY, bool isSpeed){
+    filters[0] = isGrav;
+    filters[1] = isAngle;
+    filters[2] = isVelX;
+    filters[3] = isVelY;
+    filters[4] = isSpeed;
+}
 void LvlFilter::updateArray(bool isGrav, bool isAngle, bool isVelX, bool isVelY, bool isSpeed){
     filters[0] = isGrav;
     filters[1] = isAngle;
@@ -16,4 +23,7 @@ void LvlFilter::updateArray(bool isGrav, bool isAngle, bool isVelX, bool isVelY,
 }
 bool* LvlFilter::getFilters(){
     return this->filters;
+}
+void LvlFilter::toggleIndex(int i) {
+    filters[i] = !filters[i];
 }
