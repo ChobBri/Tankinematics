@@ -13,6 +13,7 @@
 #include "ListView.hpp"
 #include "lvlHistory.h"
 #include "button.h"
+#include "lvlFilter.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -74,23 +75,38 @@ int main(void)
     Button simulateButton = Button(screenWidth/2.5+20, 70, 120, 40, "resources/simulate.png");
 
 
+
+    //STILL NEEED TO SWAP OVER.
+    Vector2 gravityBP = {50, screenHeight/7};
+    Vector2 angleBP = {50, 2*screenHeight/7};
+    Vector2 velocityXBP = {50, 3*screenHeight/7};
+    Vector2 velocityYBP = {50, 4*screenHeight/7};
+    Vector2 speedBP = {50, 5*screenHeight/7};  
+
+
+    Button toggleGravity = {gravityBP.x, gravityBP.y, 50, 50};
+    toggleGravity.setState(true); // Initialize gravity field to true when game starts (need at least one field to be true)
+    Button toggleAngle = {angleBP.x, angleBP.y, 50, 50};
+    Button toggleVelocityX = {velocityXBP.x, velocityXBP.y, 50, 50};
+    Button toggleVelocityY = {velocityYBP.x, velocityYBP.y, 50, 50};
+    Button toggleSpeed = {speedBP.x, speedBP.y, 50, 50};
+
+
+
     //Define the placements for simulation -- can be replaced with calling from level builder later
     Rectangle infoBox = {30, 70, 240, 90};
 
     Vector2 tankPos = {(infoBox.x + infoBox.width)/3, 350};
     Rectangle field = {0, tankPos.y+90, screenWidth, screenHeight}; 
 
-
-    int rand = GetRandomValue(20,200);
-
     //hints
 
     Vector2 circHint = {screenWidth/2, screenHeight/2};
 
+
     //simulation class initialized 
     Simulation pj(genericDarkenedBackground_T,tankSprite, castle);
 
-    ///////////////////
 
 
     //--------------------------------------------------------------------------------------
@@ -101,8 +117,8 @@ int main(void)
 
     //Create level history view
     ListView historyListView(240, 30, 480, 480, 10, levelHistObj.allLevels);
-
-
+    // Create level filter settings
+    LvlFilter lf(true,false,false,false,false);
 
     // Main game loop
     while (!WindowShouldClose() && !globals::quitFlag)        // Detect window close button or ESC key or set quitFlag to true
@@ -130,6 +146,36 @@ int main(void)
             case globals::LevelFilter: {
                 if (backButton.isClicked()){ //Back button clicked
                     globals::setCurrentState(globals::MainMenu);
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), toggleGravity.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+                    if (!toggleGravity.getState() || toggleAngle.getState() || toggleVelocityX.getState() || toggleVelocityY.getState() || toggleSpeed.getState()) {
+                        lf.toggleIndex(0);
+                        toggleGravity.setState(!toggleGravity.getState());
+                    }
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), toggleAngle.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+                    if (toggleGravity.getState() || !toggleAngle.getState() || toggleVelocityX.getState() || toggleVelocityY.getState() || toggleSpeed.getState()) {
+                        lf.toggleIndex(1);
+                        toggleAngle.setState(!toggleAngle.getState());
+                    }
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), toggleVelocityX.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+                    if (toggleGravity.getState() || toggleAngle.getState() || !toggleVelocityX.getState() || toggleVelocityY.getState() || toggleSpeed.getState()) {
+                        lf.toggleIndex(2);
+                        toggleVelocityX.setState(!toggleVelocityX.getState());
+                    }
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), toggleVelocityY.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+                    if (toggleGravity.getState() || toggleAngle.getState() || toggleVelocityX.getState() || !toggleVelocityY.getState() || toggleSpeed.getState()) {
+                        lf.toggleIndex(3);
+                        toggleVelocityY.setState(!toggleVelocityY.getState());
+                    }
+                }
+                else if (CheckCollisionPointRec(GetMousePosition(), toggleSpeed.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+                    if (toggleGravity.getState() || toggleAngle.getState() || toggleVelocityX.getState() || toggleVelocityY.getState() || !toggleSpeed.getState()) {
+                        lf.toggleIndex(4);
+                        toggleSpeed.setState(!toggleSpeed.getState());
+                    }
                 }
             } break;
 
@@ -231,7 +277,18 @@ int main(void)
                 case globals::LevelFilter: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                     DrawText("LevelFilter_placeholder", originVector.x, originVector.y, 25, WHITE);
+                    toggleAngle.drawState();
+                    toggleSpeed.drawState();
+                    toggleVelocityX.drawState();
+                    toggleVelocityY.drawState();
+                    toggleGravity.drawState();
+
+                    DrawText("Select parameter(s) to isolate and solve for:", 20,20, 25, WHITE);
+                    DrawText("Gravity", gravityBP.x+50+50, gravityBP.y, 50, WHITE);
+                    DrawText("Angle", angleBP.x+50+50, angleBP.y, 50, WHITE);
+                    DrawText("Velocity (x)", velocityXBP.x+50+50, velocityXBP.y, 50, WHITE);
+                    DrawText("Velocity (y)", velocityYBP.x+50+50, velocityYBP.y, 50, WHITE);
+                    DrawText("Speed", speedBP.x+50+50, speedBP.y, 50, WHITE);
 
                     backButton.drawButton();
                 } break;
@@ -243,9 +300,10 @@ int main(void)
                     DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41));
                     DrawTextureV(tankSprite, tankPos, WHITE);
                     DrawTextureV(tankSprite, tankPos, WHITE); 
+
                     //castle moves, fix later
-                    DrawTexture(damaged,670, 145, WHITE);
-                    DrawTexture(target, 720, tankPos.y-rand, RED);
+                    DrawTexture(damaged,670+12, 145, WHITE);
+                    DrawCircleV (pj.getTargetPos(), 20, RED);
 
                     mainMenuButton.drawButton();
                     replayButton.drawButton();

@@ -14,6 +14,13 @@
 #include "InitVelXLevelBuilder.h"
 #include "InitVelYLevelBuilder.h"
 #include "lvlHistory.h"
+#include "level.h"
+#include <string>
+#include "TextBox.hpp"
+
+
+Rectangle input = {960/2, 35, 100, 20};
+TextBox userIn(input.x, input.y, input.width, input.height);
 
 Simulation::Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D& castleSprite_)
 {
@@ -24,6 +31,9 @@ Simulation::Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D
     infoBox = {30, 70, 240, 90};
     tankPos = {(infoBox.x + infoBox.width)/3, 350};
     field = {0, tankPos.y+90, (float)GetScreenWidth(),(float) GetScreenHeight()}; 
+
+    
+    
 }
 
 Vector2 Simulation::getPosition (float t){
@@ -41,9 +51,7 @@ Vector2 Simulation::getPosition (float t){
 }
 
 bool Simulation::targetConfirm(){
-    if (proj.y > field.y+10){
-        return false;
-    }
+   
     if (CheckCollisionCircleRec(targetPos, 20, proj)){
         level->successfulAttempts++;
     }
@@ -58,6 +66,10 @@ Rectangle Simulation:: getProj(){
     return proj;
 }
 
+Vector2 Simulation:: getTargetPos(){
+    return targetPos;
+}
+
 void Simulation::initSimulation(levelHistory& lh){
      GravityLevelBuilder lb;
     // AngleLevelBuilder lb;
@@ -66,13 +78,13 @@ void Simulation::initSimulation(levelHistory& lh){
     // InitVelXLevelBuilder lb;
     // InitVelYLevelBuilder lb;
 
-
+    
     level = lh.addLevel(*lb.BuildLevel()); //this works, and this is why (I think):
     // LevelBuilder creates a level object on the heap, then pass a copy of that object
     // to addLevel, which puts that copy in it's allLevels vector and returns a pointer 
     // to the version which exists in allLevels vector. Then pj's level pointer is refering to
     // the Level in levelHistory's allLevels vector. qed lol
-
+    
     gravity = -level->gravity;
     angle = level->angle;
     speed = level->initSpeed;
@@ -96,6 +108,7 @@ void Simulation::initSimulation(Level* lvl){
     acTime = 0.0f;
     proj = {initPos.x, initPos.y, 15.0f, 20.0f};
     targetPos = {initPos.x + level->targetPosition.x, initPos.y - level->targetPosition.y};
+  
 }
 
 void Simulation::playSimulation(){
@@ -104,6 +117,7 @@ void Simulation::playSimulation(){
     proj.x = initPos.x;
     proj.y = initPos.y;
     level->totalAttempts++;
+    userIn.reset();
 }
 
 void Simulation::resetSimulation(){
@@ -111,6 +125,7 @@ void Simulation::resetSimulation(){
     isSimulating = false;
     proj.x = initPos.x;
     proj.y = initPos.y;
+    userIn.reset();
 }
 
 bool Simulation::simulating(){
@@ -126,148 +141,120 @@ void Simulation::update()
 
         if(failConfirm()){
             isSimulating = false;
+            
         }
     } 
+    userIn.captureText();
+    if(!(userIn.getCurrentValue()).empty())
+    {
+      Level::LevelType type = level->levelType; 
+        switch (type){
+        case 0:
+            gravity = stof(userIn.getCurrentValue());
+            break;
+        case 1:
+            angle = stof(userIn.getCurrentValue());
+            break;
+        case 2:
+            speed = stof(userIn.getCurrentValue());
+            break;
+        case 3:
+            initVelX = stof(userIn.getCurrentValue());
+            break;
+        case 4:
+            initVelY = stof(userIn.getCurrentValue());
+
+        }
+    }
+        //cout << gravity << endl;
 }
 
+
 void Simulation::display(){
+    const char* inputW;
+    const char* firstInfo;
+    const char* secInfo;
+    string convert;
+    string convertT;
     const int screenWidth = GetScreenWidth();
-    //const int screenHeight = GetScreenHeight();
+    const int screenHeight = GetScreenHeight();
 
     DrawTexture(genericBackground, 0, 0, WHITE);
-
+    //finding level type
+    Level::LevelType type = level->levelType; 
+    switch (type){
+        case 0:
+            inputW = "Gravity:";
+            convert = "Velocity: " + to_string((ceil(speed*100.0))/100.0) + "m/s";
+            firstInfo = &convert[0];
+            convertT = "Angle: "+ to_string((ceil(angle*100.0))/100.0) + "°";
+            secInfo = &convertT[0];
+            break;
+        case 1:
+            inputW = "Angle:";
+            convert = "Gravity: " + to_string((ceil(gravity*100.0))/100.0) + "m/s";
+            firstInfo = &convert[0];
+            convertT = "Angle: "+ to_string((ceil(angle*100.0))/100.0) + "°";
+            secInfo = &convertT[0];
+            break;
+        case 2:
+            inputW = "InitSpeed:";
+            convert = "Gravity: " + to_string((ceil(gravity*100.0))/100.0) + "m/s";
+            firstInfo = &convert[0];
+            convertT = "Angle: "+ to_string((ceil(angle*100.0))/100.0) + "°";
+            secInfo = &convertT[0];
+            break;
+        case 3:
+            inputW = "InitVelX:";
+            convert = "Gravity: " + to_string((ceil(gravity*100.0))/100.0) + "m/s";
+            firstInfo = &convert[0];
+            convertT = "Angle: "+ to_string((ceil(angle*100.0))/100.0) + "°";
+            secInfo = &convertT[0];
+            break;
+        case 4:
+            inputW = "InitVelY:";
+            convert = "Gravity: " + to_string((ceil(gravity*100.0))/100.0) + "m/s";
+            firstInfo = &convert[0];
+            convertT = "Angle: "+ to_string((ceil(angle*100.0))/100.0) + "°";
+            secInfo = &convertT[0];
+            break;
+        }
+        
     
     DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41)); 
     DrawTextureV(tankSprite, tankPos, WHITE);
     DrawTexture(castleSprite,670, 145, WHITE);
-    //DrawTexture(target, 720, tankPos.y-rand, RED);
+    
     DrawCircleV (targetPos, 20, RED);
     
-    char distance[] = {"Distance: 60km"};
-    char height[] = {"Height: 50km"};
-    char infoGrav[] = {"Gravity: 9.8m/s^2"};
-    char infoInitVel[] = {"Initial Velocity: 30 m/s"};
-    DrawText(distance,screenWidth/3, tankPos.y+95,25, WHITE);
-    DrawText(height,screenWidth/3+200, tankPos.y+95,25, WHITE);
+    //finding pixels, not sure if this is accurate to solving the problem
+    string distance = "Distance: " + to_string((ceil(targetPos.x - initPos.x)))+ "m";
+    string height = "Height: " + to_string(ceil(initPos.y - targetPos.y))+ "m";
+    
+   const char* dist = &distance[0];
+   const char* tall = &height[0];
+    
+    DrawText(dist,screenWidth/3, tankPos.y+95,25, WHITE);
+    DrawText(tall,screenWidth/3, tankPos.y+120,25, WHITE);
 
-    //placeholder for input
+    
+    
     DrawRectangleRec(infoBox, ColorFromHSV(55, 0.23, 0.97));
-    DrawText(infoGrav,infoBox.x+20, infoBox.y+20, 19, BLACK);
-    DrawText(infoInitVel,infoBox.x+20, infoBox.y+50, 19, BLACK);
+    DrawText(firstInfo,infoBox.x+20, infoBox.y+20, 19, BLACK);
+    DrawText(secInfo,infoBox.x+20, infoBox.y+50, 19, BLACK);
 
     if(!isSimulating){
-        Rectangle input = {(float)screenWidth/2, 35, 100, 20};
-        char inputW[] = {"Angle: "};
-        DrawText(inputW, input.x -80, input.y, 25, WHITE);
-        DrawRectangleRec(input, WHITE);
+       
+        DrawText(inputW, input.x -100, input.y, 25, WHITE);
+        userIn.drawBox();
+       
     }
 
     if(isSimulating) DrawRectangleLinesEx(proj,  10.0, RED);
     
+    
     //DrawText("Not quite ...", (screenWidth/3), (screenHeight/3), 40, BLACK);
 }
 
-// void simulation::drawSim(){
 
-//     Vector2 position = getPosition(initPos);
-//     BeginDrawing();
-
-          
-//         DrawRectangleLinesEx(proj,  10.0, RED);                                 
-
-//         EndDrawing();
-// }
-
-// //------------------------------------------------------------------------------------
-// // Program main entry point
-// //------------------------------------------------------------------------------------
-// int main(void)
-// {
-//     // Initialization
-//     //--------------------------------------------------------------------------------------
-//     const int screenWidth = 840; 
-//     const int screenHeight = 350;
-
-       
-
-//     InitWindow(screenWidth, screenHeight, "simulation");
-//     // could replace this with the level builder output 
-//     Vector2 projectilePosition = { 20.0f, 300.0f };
-
-//     //target coordinates
-//     Vector2 center = {525 , 213};
-//     //{750,200};
-//     //for the terrain
-//     Vector2 LineStart {0,projectilePosition.y};
-//     Vector2 LineEnd {screenWidth, projectilePosition.y };
-//     float initPos = projectilePosition.y;
-
-//     //everything else can be replaced by the physicsworld 
-//     float initSpeed = 80.0f;
-//     float grav = 9.8f;
-//     double time;
-//     float angle = 45.0f;
-//     bool pause = 0;
-   
-    
-
-//     SetTargetFPS(80);               // Set our game to run at 80 frames-per-second
-//     //---------------------------------------------------------------------------------------
-
-//     // Main game loop
-//     while (!WindowShouldClose())    // Detect window close button or ESC key
-//     {
-//         /**
-//          * update
-//          */ 
-//         time = GetTime();
-//         if (!pause)
-//         {
-//         projectilePosition.x = initSpeed*cos(angle)*time;
-
-//         projectilePosition.y =  initPos - initSpeed*sin(angle)*time + grav*time*time/2.0;
-//         }
-
-//         Rectangle proj = {projectilePosition.x, projectilePosition.y, 15.0f, 20.0f};
-        
-//        //for testing
-//          printf("position: %f, %f \n", projectilePosition.x, projectilePosition.y);   
-
-//         BeginDrawing();
-
-//             ClearBackground(RAYWHITE);
-//             DrawText("projectile simuation", 10, 10, 20, DARKGRAY);
-//             DrawRectangleLinesEx(proj,  10.0, RED);  
-
-//             DrawCircle(center.x, center.y, 10, GOLD );
-//             DrawLineV(LineStart, LineEnd, GREEN);
-//         /*
-//         could have new windows pop up
-//         */
-       
-//         //checking if projectile hit the terrain
-//         if(projectilePosition.y >= LineStart.y - 15 && time != 0){
-//             DrawText("Not quite ...", (screenWidth/4), (screenHeight/4), 40, GRAY);
-//             pause = 1;
-//         }
-//         //checking if projectile hit target
-//         if (CheckCollisionCircleRec( center, 10, proj)){
-//             DrawText("Congrats!", (screenWidth/4), (screenHeight/4), 40, LIME);
-//             pause = 1;
-
-//         }  
-                                            
-
-//         EndDrawing();
-
-       
-    
-//     } 
-
-//     // De-Initialization
-//     //--------------------------------------------------------------------------------------
-//     CloseWindow();        // Close window and OpenGL context
-//     //--------------------------------------------------------------------------------------
-
-//     return 0;
 

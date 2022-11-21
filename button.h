@@ -8,6 +8,7 @@ class Button{
     void drawButton(Color userColour); //Draw the button in its specified position
     void drawButton(Color userColour, char* textureName); //Draw the button in its specified position with an updated texture
     void drawLabel(char* text, int fontSize, Color fontColour); //Draws text over the button
+    void drawState();
     bool isClicked(Vector2 mousePostion); //Checks if the button was clicked
     bool isClicked();
     //Getters and setters
