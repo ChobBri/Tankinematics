@@ -201,7 +201,7 @@ void Simulation::update()
         userIn.captureText();
     }
 
-        //cout << gravity << endl;
+        cout << gravity << endl;
 }
 
 
@@ -215,7 +215,7 @@ void Simulation::display(){
     //const int screenHeight = GetScreenHeight();
 
     DrawTexture(genericBackground, 0, 0, WHITE);
-    //finding level type
+    
     std::stringstream spdStream;
     spdStream << std::fixed << std::setprecision(3) << speed;
     std::string speedStr = spdStream.str();
@@ -316,7 +316,7 @@ void Simulation::display(){
 
     if(!isSimulating){
        
-        DrawText(inputW, input.x -100, input.y, 25, WHITE);
+        DrawText(inputW, input.x -120, input.y, 25, WHITE);
         userIn.drawBox();
        
     }
