@@ -17,6 +17,10 @@
 #include "level.h"
 #include <string>
 #include "TextBox.hpp"
+#include "LvlFilter.h"
+#include <random>
+#include <sstream>
+#include <iomanip>
 
 
 Rectangle input = {960/2, 35, 100, 20};
@@ -40,10 +44,10 @@ Vector2 Simulation::getPosition (float t){
     Vector2 projectilePosition;
     if(level->angleOverVel){
         projectilePosition.x = initPos.x + speed*cos(angle * DEG2RAD)*t;
-        projectilePosition.y =  initPos.y - speed*sin(angle * DEG2RAD)*t + gravity*t*t/2.0f;
+        projectilePosition.y =  initPos.y - speed*sin(angle * DEG2RAD)*t - gravity*t*t/2.0f;
     } else {
         projectilePosition.x = initPos.x + initVelX*t;
-        projectilePosition.y =  initPos.y - initVelY*t + gravity*t*t/2.0f;
+        projectilePosition.y =  initPos.y - initVelY*t - gravity*t*t/2.0f;
     }
     
     //the box
@@ -59,7 +63,7 @@ bool Simulation::targetConfirm(){
 }
 
 bool Simulation:: failConfirm(){
-    return proj.y > field.y+5;
+    return proj.y > field.y+5 || proj.x > GetScreenWidth() || proj.x + proj.width < 0;
 }
 
 Rectangle Simulation:: getProj(){
@@ -70,22 +74,42 @@ Vector2 Simulation:: getTargetPos(){
     return targetPos;
 }
 
-void Simulation::initSimulation(levelHistory& lh){
-     GravityLevelBuilder lb;
-    // AngleLevelBuilder lb;
-    // SpeedLevelBuilder lb;
+void Simulation::initSimulation(levelHistory& lh, LvlFilter& lvlFilter){
+    userIn.reset();
+    std::vector<LevelBuilder*> possibleBuilders;
+    GravityLevelBuilder glb;
+    AngleLevelBuilder alb;
+    SpeedLevelBuilder slb;
 
-    // InitVelXLevelBuilder lb;
-    // InitVelYLevelBuilder lb;
+    InitVelXLevelBuilder xlb;
+    InitVelYLevelBuilder ylb;
 
+    bool* filters = lvlFilter.getFilters();
+    if (filters[0])
+        possibleBuilders.push_back(&glb);
+    if (filters[1])
+        possibleBuilders.push_back(&alb);
+    if (filters[2])
+        possibleBuilders.push_back(&xlb);
+    if (filters[3])
+        possibleBuilders.push_back(&ylb);
+    if (filters[4])
+        possibleBuilders.push_back(&slb);
+
+    std::random_device rd;
+    std::mt19937 rng(rd());
+
+    std::uniform_int_distribution<int> intDist(0, possibleBuilders.size() - 1);
+
+    LevelBuilder* lb = possibleBuilders[intDist(rng)];
     
-    level = lh.addLevel(*lb.BuildLevel()); //this works, and this is why (I think):
+    level = lh.addLevel(*(lb->BuildLevel())); //this works, and this is why (I think):
     // LevelBuilder creates a level object on the heap, then pass a copy of that object
     // to addLevel, which puts that copy in it's allLevels vector and returns a pointer 
     // to the version which exists in allLevels vector. Then pj's level pointer is refering to
     // the Level in levelHistory's allLevels vector. qed lol
     
-    gravity = -level->gravity;
+    gravity = level->gravity;
     angle = level->angle;
     speed = level->initSpeed;
     initVelX = level->initVelocity.x;
@@ -98,8 +122,10 @@ void Simulation::initSimulation(levelHistory& lh){
 }
 
 void Simulation::initSimulation(Level* lvl){
+    userIn.reset();
+
     level = lvl;
-    gravity = -level->gravity;
+    gravity = level->gravity;
     angle = level->angle;
     speed = level->initSpeed;
     initVelX = level->initVelocity.x;
@@ -112,6 +138,34 @@ void Simulation::initSimulation(Level* lvl){
 }
 
 void Simulation::playSimulation(){
+
+    std::string inputStr = userIn.getCurrentValue();
+    float value;
+    try {
+        value = std::stof(inputStr);
+    } catch(std::invalid_argument& e) {
+        userIn.reset();
+        return;
+    }
+
+    Level::LevelType type = level->levelType; 
+    switch (type){
+    case 0:
+        gravity = value;
+        break;
+    case 1:
+        angle = value;
+        break;
+    case 2:
+        speed = value;
+        break;
+    case 3:
+        initVelX = value;
+        break;
+    case 4:
+        initVelY = value;
+    }
+
     acTime = 0.0f;
     isSimulating = true;
     proj.x = initPos.x;
@@ -143,29 +197,10 @@ void Simulation::update()
             isSimulating = false;
             
         }
-    } 
-    userIn.captureText();
-    if(!(userIn.getCurrentValue()).empty())
-    {
-      Level::LevelType type = level->levelType; 
-        switch (type){
-        case 0:
-            gravity = stof(userIn.getCurrentValue());
-            break;
-        case 1:
-            angle = stof(userIn.getCurrentValue());
-            break;
-        case 2:
-            speed = stof(userIn.getCurrentValue());
-            break;
-        case 3:
-            initVelX = stof(userIn.getCurrentValue());
-            break;
-        case 4:
-            initVelY = stof(userIn.getCurrentValue());
-
-        }
+    } else {
+        userIn.captureText();
     }
+
         //cout << gravity << endl;
 }
 
@@ -177,45 +212,74 @@ void Simulation::display(){
     string convert;
     string convertT;
     const int screenWidth = GetScreenWidth();
-    const int screenHeight = GetScreenHeight();
+    //const int screenHeight = GetScreenHeight();
 
     DrawTexture(genericBackground, 0, 0, WHITE);
     //finding level type
+    std::stringstream spdStream;
+    spdStream << std::fixed << std::setprecision(3) << speed;
+    std::string speedStr = spdStream.str();
+
+    std::stringstream angStream;
+    angStream << std::fixed << std::setprecision(3) << angle;
+    std::string angleStr = angStream.str();
+
+    std::stringstream gravStream;
+    gravStream << std::fixed << std::setprecision(3) << gravity;
+    std::string gravStr = gravStream.str();
+
+    std::stringstream initVelXStream;
+    initVelXStream << std::fixed << std::setprecision(3) << initVelX;
+    std::string initVelXStr = initVelXStream.str();
+
+    std::stringstream initVelYStream;
+    initVelYStream << std::fixed << std::setprecision(3) << initVelY;
+    std::string initVelYStr = initVelYStream.str();
+
     Level::LevelType type = level->levelType; 
     switch (type){
         case 0:
             inputW = "Gravity:";
-            convert = "Velocity: " + to_string((ceil(speed*100.0))/100.0) + "m/s";
-            firstInfo = &convert[0];
-            convertT = "Angle: "+ to_string((ceil(angle*100.0))/100.0) + "°";
-            secInfo = &convertT[0];
+            if (level->angleOverVel){
+                
+                convert = "Speed: " + speedStr + "m/s";
+                firstInfo = &convert[0];
+                convertT = "Angle: "+ angleStr + "°";
+                secInfo = &convertT[0];
+            } else {
+                convert = "InitVelX: " + initVelXStr + "m/s";
+                firstInfo = &convert[0];
+                convertT = "InitVelY: "+ initVelYStr + "m/s";
+                secInfo = &convertT[0];
+            }
+            
             break;
         case 1:
             inputW = "Angle:";
-            convert = "Gravity: " + to_string((ceil(gravity*100.0))/100.0) + "m/s";
+            convert = "Gravity: " + gravStr + "m/s^2";
             firstInfo = &convert[0];
-            convertT = "Angle: "+ to_string((ceil(angle*100.0))/100.0) + "°";
+            convertT = "Speed: "+ speedStr + "m/s";
             secInfo = &convertT[0];
             break;
         case 2:
             inputW = "InitSpeed:";
-            convert = "Gravity: " + to_string((ceil(gravity*100.0))/100.0) + "m/s";
+            convert = "Gravity: " + gravStr + "m/s^2";
             firstInfo = &convert[0];
-            convertT = "Angle: "+ to_string((ceil(angle*100.0))/100.0) + "°";
+            convertT = "Angle: "+ angleStr + "°";
             secInfo = &convertT[0];
             break;
         case 3:
             inputW = "InitVelX:";
-            convert = "Gravity: " + to_string((ceil(gravity*100.0))/100.0) + "m/s";
+            convert = "Gravity: " + gravStr + "m/s^2";
             firstInfo = &convert[0];
-            convertT = "Angle: "+ to_string((ceil(angle*100.0))/100.0) + "°";
+            convertT = "InitVelY: "+ initVelYStr + "m/s";
             secInfo = &convertT[0];
             break;
         case 4:
             inputW = "InitVelY:";
-            convert = "Gravity: " + to_string((ceil(gravity*100.0))/100.0) + "m/s";
+            convert = "Gravity: " + gravStr + "m/s^2";
             firstInfo = &convert[0];
-            convertT = "Angle: "+ to_string((ceil(angle*100.0))/100.0) + "°";
+            convertT = "InitVelX: "+ initVelXStr + "m/s";
             secInfo = &convertT[0];
             break;
         }
@@ -227,9 +291,16 @@ void Simulation::display(){
     
     DrawCircleV (targetPos, 20, RED);
     
+    std::stringstream distStream;
+    distStream << std::fixed << std::setprecision(3) << (targetPos.x - initPos.x);
+    std::string distStr = distStream.str();
+
+    std::stringstream heightStream;
+    heightStream << std::fixed << std::setprecision(3) << (initPos.y - targetPos.y);
+    std::string heightStr = heightStream.str();
     //finding pixels, not sure if this is accurate to solving the problem
-    string distance = "Distance: " + to_string((ceil(targetPos.x - initPos.x)))+ "m";
-    string height = "Height: " + to_string(ceil(initPos.y - targetPos.y))+ "m";
+    string distance = "Horizontal Displacement: " + distStr + "m";
+    string height = "Height: " + heightStr + "m";
     
    const char* dist = &distance[0];
    const char* tall = &height[0];

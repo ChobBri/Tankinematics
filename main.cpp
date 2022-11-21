@@ -134,7 +134,7 @@ int main(void)
                 if (exitButton.isClicked()){ //Exit Button Clicked
                     globals::quitFlag = true;
                 } else if (playButton.isClicked()){ //Play button clicked
-                    pj.initSimulation(levelHistObj);
+                    pj.initSimulation(levelHistObj, lf);
                     globals::setCurrentState(globals::Simulation);
                 } else if (filterButton.isClicked()){ //Filter button Clicked
                     globals::setCurrentState(globals::LevelFilter);
@@ -212,7 +212,7 @@ int main(void)
                     else if (hintButton.isClicked()){
                         globals::setCurrentState(globals::Hints);
                     }
-                    else if (simulateButton.isClicked()){
+                    else if (simulateButton.isClicked() || IsKeyPressed(KEY_ENTER)){
                         pj.playSimulation();
                     }
                 }

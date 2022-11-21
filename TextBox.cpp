@@ -51,10 +51,11 @@ void TextBox::drawBox(){
 }
 
 void TextBox::reset(){
-    for (char i : currentValue){
+    for (char& i : currentValue){
         if (i != '\0')
             i = '\0';
     }
+    letterCount = 0;
     return;
 }
         
