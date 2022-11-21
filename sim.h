@@ -49,6 +49,8 @@ class Simulation{
     bool failConfirm();
  
     Rectangle getProj();
+    
+    Vector2 getTargetPos();
 
     void initSimulation(levelHistory&);
     void initSimulation(Level* lvl);

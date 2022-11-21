@@ -124,12 +124,10 @@ int main(void)
     Vector2 tankPos = {(infoBox.x + infoBox.width)/3, 350};
     Rectangle field = {0, tankPos.y+90, screenWidth, screenHeight}; 
 
-
-    int rand = GetRandomValue(20,200);
-
     //hints
 
     Vector2 circHint = {screenWidth/2, screenHeight/2};
+
 
     //simulation class initialized 
     Simulation pj(genericDarkenedBackground_T,tankSprite, castle, simulate, hint, backButton_T);
@@ -329,8 +327,8 @@ int main(void)
                     DrawTextureV(tankSprite, tankPos, WHITE); 
 
                     //castle moves, fix later
-                    DrawTexture(damaged,670, 145, WHITE);
-                    DrawTexture(target, 720, tankPos.y-rand, RED);
+                    DrawTexture(damaged,670+12, 145, WHITE);
+                    DrawCircleV (pj.getTargetPos(), 20, RED);
 
                     DrawTexture(main, mainBB.x, mainBB.y, WHITE);
                     DrawTexture(replay, replayBB.x, replayBB.y, WHITE);

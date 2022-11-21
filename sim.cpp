@@ -34,7 +34,7 @@ Simulation::Simulation(Texture2D& genericBkg_, Texture2D& tankSprite_, Texture2D
     infoBox = {30, 70, 240, 90};
     tankPos = {(infoBox.x + infoBox.width)/3, 350};
     field = {0, tankPos.y+90, (float)GetScreenWidth(),(float) GetScreenHeight()}; 
-    input = {(float)GetScreenWidth()/2, 35, 100, 20};
+
     
     
 }
@@ -54,9 +54,7 @@ Vector2 Simulation::getPosition (float t){
 }
 
 bool Simulation::targetConfirm(){
-    if (proj.y > field.y+10){
-        return false;
-    }
+   
     if (CheckCollisionCircleRec(targetPos, 20, proj)){
         level->successfulAttempts++;
     }
@@ -69,6 +67,10 @@ bool Simulation:: failConfirm(){
 
 Rectangle Simulation:: getProj(){
     return proj;
+}
+
+Vector2 Simulation:: getTargetPos(){
+    return targetPos;
 }
 
 void Simulation::initSimulation(levelHistory& lh){
@@ -118,6 +120,7 @@ void Simulation::playSimulation(){
     proj.x = initPos.x;
     proj.y = initPos.y;
     level->totalAttempts++;
+    userIn.reset();
 }
 
 void Simulation::resetSimulation(){
@@ -125,6 +128,7 @@ void Simulation::resetSimulation(){
     isSimulating = false;
     proj.x = initPos.x;
     proj.y = initPos.y;
+    userIn.reset();
 }
 
 bool Simulation::simulating(){
@@ -140,6 +144,7 @@ void Simulation::update()
 
         if(failConfirm()){
             isSimulating = false;
+            
         }
     } 
     userIn.captureText();
@@ -164,7 +169,7 @@ void Simulation::update()
 
         }
     }
-        cout << gravity << endl;
+        //cout << gravity << endl;
 }
 
 
@@ -245,7 +250,6 @@ void Simulation::display(){
        
         DrawText(inputW, input.x -100, input.y, 25, WHITE);
         userIn.drawBox();
-        
        
     }
 
@@ -260,6 +264,7 @@ void Simulation::display(){
     DrawTexture(backButtonSprite, backBP.x, backBP.y, WHITE);
 
     if(isSimulating) DrawRectangleLinesEx(proj,  10.0, RED);
+    
     
     //DrawText("Not quite ...", (screenWidth/3), (screenHeight/3), 40, BLACK);
 }
