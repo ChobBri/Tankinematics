@@ -187,7 +187,7 @@ int main(void)
                     globals::setCurrentState(globals:: MainMenu);
                 } else if (nextLevelButton.isClicked()){
                     globals::setCurrentState(globals::Simulation);
-                    pj.initSimulation(levelHistObj);
+                    pj.initSimulation(levelHistObj, lf);
                 }
 
             } break;
