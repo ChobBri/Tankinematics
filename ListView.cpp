@@ -107,5 +107,5 @@ int ListView::isClicked(){
  * Returns the level corresponding to the replay button which was clicked.
 */
 Level* ListView::getClicked(){
-    return clicked; //Could instead just return address of allLevels[0]
+    return &((*allEntries)[0]); //Could instead just return address of allLevels[0]
 }
