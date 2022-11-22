@@ -73,6 +73,7 @@ int main(void)
     Button mainMenuButton = Button(510, 250, 60, 60, "resources/main.png");
     Button hintButton = Button(900, 10, 40, 40, "resources/HINT.png");
     Button simulateButton = Button(screenWidth/2.5+20, 70, 120, 40, "resources/simulate.png");
+    Button nextLevelButton = Button(screenWidth/2-46, 323, 93, 63, "resources/nextLevel.png");
 
 
 
@@ -182,9 +183,13 @@ int main(void)
             case globals::Success: {
                 if (replayButton.isClicked()){ //replay button clicked
                     globals::setCurrentState(globals::Simulation);
-                }
-                else if (mainMenuButton.isClicked())
+                } else if (mainMenuButton.isClicked()) {
                     globals::setCurrentState(globals:: MainMenu);
+                } else if (nextLevelButton.isClicked()){
+                    globals::setCurrentState(globals::Simulation);
+                    pj.initSimulation(levelHistObj);
+                }
+
             } break;
 
             case globals::History: {
@@ -196,7 +201,7 @@ int main(void)
                 if (historyListView.isClicked() != -1){ 
                     pj.initSimulation(historyListView.getClicked());
                     
-                    levelHistObj.moveToTop(historyListView.isClicked());
+                    //levelHistObj.moveToTop(historyListView.isClicked());
                     globals::setCurrentState(globals::Simulation);
                 }
 
@@ -307,6 +312,7 @@ int main(void)
 
                     mainMenuButton.drawButton();
                     replayButton.drawButton();
+                    nextLevelButton.drawButton();
                 } break;
 
                 case globals::History: {
