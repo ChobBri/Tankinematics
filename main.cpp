@@ -199,7 +199,11 @@ int main(void)
 
                 //User wants to replay a level
                 if (historyListView.isClicked() != -1){ 
-                    pj.initSimulation(historyListView.getClicked());
+                    levelHistObj.moveToTop(historyListView.isClicked());
+
+                    Level* level = historyListView.getClicked();
+                    
+                    pj.initSimulation(level);
                     
                     //levelHistObj.moveToTop(historyListView.isClicked());
                     globals::setCurrentState(globals::Simulation);
