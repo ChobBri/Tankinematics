@@ -207,10 +207,9 @@ void Simulation::update()
 
 void Simulation::display(){
     const char* inputW;
-    const char* firstInfo;
-    const char* secInfo;
-    string convert;
-    string convertT;
+
+    string firstInfo;
+    string secInfo;
     const int screenWidth = GetScreenWidth();
     //const int screenHeight = GetScreenHeight();
 
@@ -242,45 +241,33 @@ void Simulation::display(){
             inputW = "Gravity:";
             if (level->angleOverVel){
                 
-                convert = "Speed: " + speedStr + "m/s";
-                firstInfo = &convert[0];
-                convertT = "Angle: "+ angleStr + "°";
-                secInfo = &convertT[0];
+                firstInfo = "Speed: " + speedStr + "m/s";
+                secInfo = "Angle: "+ angleStr + "°";
             } else {
-                convert = "InitVelX: " + initVelXStr + "m/s";
-                firstInfo = &convert[0];
-                convertT = "InitVelY: "+ initVelYStr + "m/s";
-                secInfo = &convertT[0];
+                firstInfo = "InitVelX: " + initVelXStr + "m/s";
+                secInfo = "InitVelY: "+ initVelYStr + "m/s";
             }
             
             break;
         case 1:
             inputW = "Angle:";
-            convert = "Gravity: " + gravStr + "m/s^2";
-            firstInfo = &convert[0];
-            convertT = "Speed: "+ speedStr + "m/s";
-            secInfo = &convertT[0];
+            firstInfo = "Gravity: " + gravStr + "m/s^2";
+            secInfo = "Speed: "+ speedStr + "m/s";
             break;
         case 2:
             inputW = "InitSpeed:";
-            convert = "Gravity: " + gravStr + "m/s^2";
-            firstInfo = &convert[0];
-            convertT = "Angle: "+ angleStr + "°";
-            secInfo = &convertT[0];
+            firstInfo = "Gravity: " + gravStr + "m/s^2";
+            secInfo = "Angle: "+ angleStr + "°";
             break;
         case 3:
             inputW = "InitVelX:";
-            convert = "Gravity: " + gravStr + "m/s^2";
-            firstInfo = &convert[0];
-            convertT = "InitVelY: "+ initVelYStr + "m/s";
-            secInfo = &convertT[0];
+            firstInfo = "Gravity: " + gravStr + "m/s^2";
+            secInfo = "InitVelY: "+ initVelYStr + "m/s";
             break;
         case 4:
             inputW = "InitVelY:";
-            convert = "Gravity: " + gravStr + "m/s^2";
-            firstInfo = &convert[0];
-            convertT = "InitVelX: "+ initVelXStr + "m/s";
-            secInfo = &convertT[0];
+            firstInfo = "Gravity: " + gravStr + "m/s^2";
+            secInfo = "InitVelX: "+ initVelXStr + "m/s";
             break;
         }
         
@@ -311,8 +298,8 @@ void Simulation::display(){
     
     
     DrawRectangleRec(infoBox, ColorFromHSV(55, 0.23, 0.97));
-    DrawText(firstInfo,infoBox.x+20, infoBox.y+20, 19, BLACK);
-    DrawText(secInfo,infoBox.x+20, infoBox.y+50, 19, BLACK);
+    DrawText(&firstInfo[0],infoBox.x+20, infoBox.y+20, 19, BLACK);
+    DrawText(&secInfo[0],infoBox.x+20, infoBox.y+50, 19, BLACK);
 
     if(!isSimulating){
        
