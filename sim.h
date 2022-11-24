@@ -7,6 +7,7 @@
 #include "Level.h"
 #include "lvlHistory.h"
 #include "LvlFilter.h"
+#include <string>
 
 
 class Simulation{
@@ -49,6 +50,8 @@ class Simulation{
     Rectangle getProj();
     
     Vector2 getTargetPos();
+    std::string getSolutionString();
+
 
     void initSimulation(levelHistory&, LvlFilter&);
     void initSimulation(Level* lvl);

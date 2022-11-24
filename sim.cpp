@@ -74,6 +74,28 @@ Vector2 Simulation:: getTargetPos(){
     return targetPos;
 }
 
+std::string Simulation::getSolutionString(){
+    std::stringstream solutionStream;
+    solutionStream << std::fixed << std::setprecision(3) << level->solution;
+    std::string solutionStr = solutionStream.str();
+
+    Level::LevelType type = level->levelType;
+    switch (type){
+        case Level::LevelType::Gravity:
+            
+            return "The solution is: " + solutionStr + " m/s^2";
+        case Level::LevelType::Angle:
+            return "The solution is: " + solutionStr + "°";
+        case Level::LevelType::InitSpeed:
+            return "The solution is: " + solutionStr + " m/s";
+        case Level::LevelType::InitVelX:
+            return "The solution is: " + solutionStr + " m/s";
+        case Level::LevelType::InitVelY:
+            return "The solution is: " + solutionStr + " m/s";
+    }
+    return "error?";
+}
+
 void Simulation::initSimulation(levelHistory& lh, LvlFilter& lvlFilter){
     userIn.reset();
     std::vector<LevelBuilder*> possibleBuilders;
