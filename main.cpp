@@ -341,9 +341,9 @@ int main(void)
 
                     DrawCircleV(circHint, 200, GOLD);
                     backButton.drawButton();
-                    DrawText("Hints", screenWidth/2-40, 80, 40, BLACK);
+                    DrawText("Solution", screenWidth/2-75, 90, 40, BLACK);
                     //placeholder
-                    DrawText("Use the Equation: --------", screenWidth/2 - 160, 250,25, BLACK);
+                    DrawText(&pj.getSolutionString()[0], screenWidth/2 - 180, 250,25, BLACK);
                 } break;
 
                 default: {
