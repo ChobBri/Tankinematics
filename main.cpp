@@ -148,31 +148,31 @@ int main(void)
                 if (backButton.isClicked()){ //Back button clicked
                     globals::setCurrentState(globals::MainMenu);
                 }
-                else if (CheckCollisionPointRec(GetMousePosition(), toggleGravity.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+                else if (toggleGravity.isClicked()){ 
                     if (!toggleGravity.getState() || toggleAngle.getState() || toggleVelocityX.getState() || toggleVelocityY.getState() || toggleSpeed.getState()) {
                         lf.toggleIndex(0);
                         toggleGravity.setState(!toggleGravity.getState());
                     }
                 }
-                else if (CheckCollisionPointRec(GetMousePosition(), toggleAngle.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+                else if (toggleAngle.isClicked()){ 
                     if (toggleGravity.getState() || !toggleAngle.getState() || toggleVelocityX.getState() || toggleVelocityY.getState() || toggleSpeed.getState()) {
                         lf.toggleIndex(1);
                         toggleAngle.setState(!toggleAngle.getState());
                     }
                 }
-                else if (CheckCollisionPointRec(GetMousePosition(), toggleVelocityX.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+                else if (toggleVelocityX.isClicked()){ 
                     if (toggleGravity.getState() || toggleAngle.getState() || !toggleVelocityX.getState() || toggleVelocityY.getState() || toggleSpeed.getState()) {
                         lf.toggleIndex(2);
                         toggleVelocityX.setState(!toggleVelocityX.getState());
                     }
                 }
-                else if (CheckCollisionPointRec(GetMousePosition(), toggleVelocityY.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+                else if (toggleVelocityY.isClicked()){ 
                     if (toggleGravity.getState() || toggleAngle.getState() || toggleVelocityX.getState() || !toggleVelocityY.getState() || toggleSpeed.getState()) {
                         lf.toggleIndex(3);
                         toggleVelocityY.setState(!toggleVelocityY.getState());
                     }
                 }
-                else if (CheckCollisionPointRec(GetMousePosition(), toggleSpeed.getBounds()) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){ 
+                else if (toggleSpeed.isClicked()){ 
                     if (toggleGravity.getState() || toggleAngle.getState() || toggleVelocityX.getState() || toggleVelocityY.getState() || !toggleSpeed.getState()) {
                         lf.toggleIndex(4);
                         toggleSpeed.setState(!toggleSpeed.getState());
