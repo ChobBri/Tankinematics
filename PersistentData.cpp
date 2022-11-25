@@ -6,6 +6,15 @@ using namespace std;
 
 string PersistentData::relativeLevelFilePath = "levelData/level.dat";
 
+PersistentDataException::PersistentDataException(string errMsgIn){
+    errMsg = errMsgIn;
+    return;
+}
+
+string PersistentDataException::what(){
+    return errMsg;
+}
+
 /**
  * Save the passed vector of levels to disk.
 */
@@ -63,25 +72,27 @@ vector<Level> PersistentData::loadLevels(){
         std::istringstream issLine(line);
         issLine >> gravity >> angle >> initSpeed >> initVelocity.x >> initVelocity.y >> tankPosition.x >> tankPosition.y >> targetPosition.x >> targetPosition.y >> angleOverVel >> totalAttempts >> successfulAttempts >> time >> levelTypeString >> solution;
         
-        //convert (string)levelType to levelType 
-        switch (stoi(levelTypeString))
-        {
-        case 0:
-            levelType = Level::LevelType::Gravity;
-            break;
-        case 1:
-            levelType = Level::LevelType::Angle;
-            break;
-        case 2:
-            levelType = Level::LevelType::InitSpeed;
-            break;
-        case 3:
-            levelType = Level::LevelType::InitVelX;
-            break;
-        default:
-            levelType = Level::LevelType::InitVelY;
-            break;
-        }
+        try{
+            //convert (string)levelType to levelType 
+            switch (stoi(levelTypeString))
+            {
+            case 0:
+                levelType = Level::LevelType::Gravity;
+                break;
+            case 1:
+                levelType = Level::LevelType::Angle;
+                break;
+            case 2:
+                levelType = Level::LevelType::InitSpeed;
+                break;
+            case 3:
+                levelType = Level::LevelType::InitVelX;
+                break;
+            default:
+                levelType = Level::LevelType::InitVelY;
+                break;
+            }
+        } catch 
 
         //Push level with all EXCEPT hints populated
         importedLevels.emplace_back(Level{
@@ -108,6 +119,7 @@ vector<Level> PersistentData::loadLevels(){
         }
         
     }
+    inputStream.close();
     return importedLevels;
 }
 

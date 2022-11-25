@@ -6,6 +6,14 @@
 
 using namespace std;
 
+class PersistentDataException {
+    public:
+        PersistentDataException(string);
+        string what();
+    private:
+        string errMsg;
+}
+
 class PersistentData {
     public:
         /**
