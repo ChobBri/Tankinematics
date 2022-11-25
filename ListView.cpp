@@ -54,6 +54,10 @@ void ListView::DrawListView(){
         position++;
         if (position >= maxEntriesShown) break;
     }
+
+    if (allEntries->empty())
+        DrawText(TextFormat("No Levels in History!"), bounds.x + 10, bounds.y + +10, 20, BLACK);
+    
 }
 
 /**
