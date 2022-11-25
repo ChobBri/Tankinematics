@@ -69,12 +69,11 @@ int main(void)
     Button playButton = Button(355, 270, 120, 120, "resources/playButton.png");
     Button filterButton = Button(485, 270, 120, 120, "resources/filterButton.png");
     Button exitButton = Button(10, 490, 40, 40, "resources/exitButton.png");
-    Button replayButton = Button(410, 250, 60, 60, "resources/Replay.png");
-    Button mainMenuButton = Button(510, 250, 60, 60, "resources/main.png");
-    Button solutionButton = Button(900, 10, 40, 40, "resources/solutionButton.png");
-    Button simulateButton = Button(screenWidth/2.5+20, 70, 120, 40, "resources/simulate.png");
-    Button nextLevelButton = Button(screenWidth/2-46, 323, 93, 63, "resources/nextLevel.png");
-
+    Button replayButton = Button(385, 250, 90, 60, "resources/replayButton.png");
+    Button mainMenuButton = Button(435, 320, 90, 60, "resources/mainMenuButton.png");
+    Button nextLevelButton = Button(485, 250, 90, 60, "resources/nextLevelButton.png");
+    Button solutionButton = Button(900, 10, 60, 60, "resources/solutionButton.png");
+    Button simulateButton = Button(screenWidth/2.5+20, 70, 120, 40, "resources/simulateButton.png");
 
 
     //STILL NEEED TO SWAP OVER.
@@ -306,7 +305,7 @@ int main(void)
                 case globals::Success: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
-                    DrawText("SUCCESS!", screenWidth/2 - 100, screenHeight/2 -  100, 50, WHITE);
+                    DrawText("SUCCESS!", screenWidth/2 - 130, screenHeight/2 -  100, 50, WHITE);
                     DrawRectangleRec(field, ColorFromHSV(134, 0.38, 0.41));
                     DrawTextureV(tankSprite, tankPos, WHITE);
                     DrawTextureV(tankSprite, tankPos, WHITE); 
