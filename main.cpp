@@ -114,6 +114,7 @@ int main(void)
 
     //Create levelHistory object
     levelHistory levelHistObj = levelHistory();
+    PersistentData::initialize("levelData/level.dat", false);
     levelHistObj.allLevels = PersistentData::loadLevels();
 
     //Create level history view
@@ -323,8 +324,10 @@ int main(void)
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
                     backButton.drawButton();
-
                     historyListView.DrawListView();
+
+                    if (PersistentData::isError()) //If error was detected when loading data
+                        DrawText(TextFormat("Error detected when loading previous level history on startup:\nLevel data was corrupted or otherwise unreadable and has been erased"), 5, 5, 10, RED);
                 } break;
 
                 case globals::Simulation: {

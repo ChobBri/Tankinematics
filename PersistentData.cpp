@@ -4,16 +4,12 @@
 
 using namespace std;
 
-string PersistentData::relativeLevelFilePath = "levelData/level.dat";
+string PersistentData::relativeLevelFilePath = "";
 
-PersistentDataException::PersistentDataException(string errMsgIn){
-    errMsg = errMsgIn;
-    return;
-}
+bool PersistentData::wasError = false;
 
-string PersistentDataException::what(){
-    return errMsg;
-}
+
+
 
 /**
  * Save the passed vector of levels to disk.
@@ -67,32 +63,40 @@ vector<Level> PersistentData::loadLevels(){
     string levelTypeString = "";
 
     while (std::getline(inputStream, line)){
-        
+
         //Extract all variables which don't (can't) contain spaces
         std::istringstream issLine(line);
+
         issLine >> gravity >> angle >> initSpeed >> initVelocity.x >> initVelocity.y >> tankPosition.x >> tankPosition.y >> targetPosition.x >> targetPosition.y >> angleOverVel >> totalAttempts >> successfulAttempts >> time >> levelTypeString >> solution;
         
-        try{
-            //convert (string)levelType to levelType 
-            switch (stoi(levelTypeString))
-            {
-            case 0:
-                levelType = Level::LevelType::Gravity;
-                break;
-            case 1:
-                levelType = Level::LevelType::Angle;
-                break;
-            case 2:
-                levelType = Level::LevelType::InitSpeed;
-                break;
-            case 3:
-                levelType = Level::LevelType::InitVelX;
-                break;
-            default:
-                levelType = Level::LevelType::InitVelY;
-                break;
-            }
-        } catch 
+        if (!(gravity || angle || initSpeed || initVelocity.x || initVelocity.y)) { //levelHistory corrupted, give user error message and reset corrupted file
+            inputStream.close();
+            inputStream.open(relativeLevelFilePath, ios::out | ios::trunc); //open with trunc flag to clear the file
+            inputStream.close();
+            PersistentData::wasError = true;
+            return importedLevels;
+        }
+    
+        //convert (string)levelType to levelType 
+        switch (stoi(levelTypeString))
+        {
+        case 0:
+            levelType = Level::LevelType::Gravity;
+            break;
+        case 1:
+            levelType = Level::LevelType::Angle;
+            break;
+        case 2:
+            levelType = Level::LevelType::InitSpeed;
+            break;
+        case 3:
+            levelType = Level::LevelType::InitVelX;
+            break;
+        default:
+            levelType = Level::LevelType::InitVelY;
+            break;
+        }
+       
 
         //Push level with all EXCEPT hints populated
         importedLevels.emplace_back(Level{
@@ -121,6 +125,21 @@ vector<Level> PersistentData::loadLevels(){
     }
     inputStream.close();
     return importedLevels;
+}
+
+/**
+ * Returns true if error was detected in loading level history
+ * data from the disk. This also indicates the file was reset.
+*/
+bool PersistentData::isError(){
+    return PersistentData::wasError;
+}
+
+
+void PersistentData::initialize(string filepath, bool errorState){
+    PersistentData::relativeLevelFilePath = filepath;
+    PersistentData::wasError = errorState;
+    return;
 }
 
 

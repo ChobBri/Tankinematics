@@ -6,22 +6,8 @@
 
 using namespace std;
 
-class PersistentDataException {
-    public:
-        PersistentDataException(string);
-        string what();
-    private:
-        string errMsg;
-}
-
 class PersistentData {
     public:
-        /**
-         * This is the relative path to the file that levels will 
-         * be read from / written to.
-        */
-        static string relativeLevelFilePath;
-
         /**
          * Invoked before exiting program to save persistent data 
          * (level history) to disk.
@@ -38,6 +24,28 @@ class PersistentData {
          * back from disk then print their contents to terminal.
         */
         static void debugLevel();
+
+        /**
+         * Will return isError flag
+        */
+        static bool isError();
+
+        /**
+         * Used to initialize fields in place of constructor because theyre static
+        */
+        static void initialize(string, bool);
+
+    private:
+        /**
+         * This is the relative path to the file that levels will 
+         * be read from / written to.
+        */
+        static string relativeLevelFilePath;
+
+        /**
+         * This flag is set when loading to indicate an error occured.
+        */
+        static bool wasError;
 };
 
 #endif
