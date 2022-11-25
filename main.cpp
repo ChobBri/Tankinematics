@@ -71,7 +71,7 @@ int main(void)
     Button exitButton = Button(10, 490, 40, 40, "resources/exitButton.png");
     Button replayButton = Button(410, 250, 60, 60, "resources/Replay.png");
     Button mainMenuButton = Button(510, 250, 60, 60, "resources/main.png");
-    Button hintButton = Button(900, 10, 40, 40, "resources/HINT.png");
+    Button solutionButton = Button(900, 10, 40, 40, "resources/solutionButton.png");
     Button simulateButton = Button(screenWidth/2.5+20, 70, 120, 40, "resources/simulate.png");
     Button nextLevelButton = Button(screenWidth/2-46, 323, 93, 63, "resources/nextLevel.png");
 
@@ -218,7 +218,7 @@ int main(void)
                     if (backButton.isClicked()){ //Back button clicked
                         globals::setCurrentState(globals::MainMenu);
                     }
-                    else if (hintButton.isClicked()){
+                    else if (solutionButton.isClicked()){
                         globals::setCurrentState(globals::Hints);
                     }
                     else if (simulateButton.isClicked() || IsKeyPressed(KEY_ENTER)){
@@ -331,7 +331,7 @@ int main(void)
                     pj.display();
                     backButton.drawButton();
                     if (!pj.simulating()){
-                        hintButton.drawButton();
+                        solutionButton.drawButton();
                         simulateButton.drawButton();
                     }
                 } break;
