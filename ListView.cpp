@@ -80,8 +80,7 @@ replayButton ListView::drawHistoryEntry(Level level, int position){
     //Draw level stats
     DrawText(TextFormat("Total Attempts: %d", level.totalAttempts),             leftBoxEdge+4, topBoxEdge+4 + 0,    fontSize, BLACK);
     DrawText(TextFormat("Successful Attempts: %d", level.successfulAttempts),   leftBoxEdge+4, topBoxEdge+4 + 10,   fontSize, BLACK);
-    DrawText(TextFormat("replayButton's index value: %d", position),            leftBoxEdge+4, topBoxEdge+4 + 20,   fontSize, BLACK);
-    DrawText(levelTypeToString(level.levelType),                                leftBoxEdge+4, topBoxEdge+4 + 30,   fontSize, BLACK);
+    DrawText(TextFormat("Level type: %s", levelTypeToString(level.levelType)),  leftBoxEdge+4, topBoxEdge+4 + 30,   fontSize, BLACK);
 
     //Draw play button and text
     Rectangle playButton = {leftBoxEdge + boxWidth - 94, topBoxEdge + 4, 90, boxHeight-8};
