@@ -21,7 +21,7 @@
 
 
 namespace globals {
-        enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, Hints};
+        enum gameStates {Title = 0, MainMenu, LevelFilter, Success, History, Simulation, ShowSolution};
         static gameStates currentState = Title;
         static bool quitFlag = false; //Setting to true will close game
         int frameCounter = 0; //Currently only used to stay on title screen for specified number of frames
@@ -220,7 +220,7 @@ int main(void)
                         globals::setCurrentState(globals::MainMenu);
                     }
                     else if (solutionButton.isClicked()){
-                        globals::setCurrentState(globals::Hints);
+                        globals::setCurrentState(globals::ShowSolution);
                     }
                     else if (simulateButton.isClicked() || IsKeyPressed(KEY_ENTER)){
                         pj.playSimulation();
@@ -240,7 +240,7 @@ int main(void)
                 }
             } break;
 
-            case globals::Hints:{
+            case globals::ShowSolution:{
                 if (backButton.isClicked()){ //Back button clicked
                     globals::setCurrentState(globals::Simulation);
                 }
@@ -339,7 +339,7 @@ int main(void)
                     }
                 } break;
 
-                case globals :: Hints: {
+                case globals :: ShowSolution: {
                     DrawTexture(genericDarkenedBackground_T, originVector.x, originVector.y, WHITE);
 
                     DrawCircleV(circHint, 200, GOLD);
