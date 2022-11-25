@@ -106,7 +106,7 @@ vector<Level> PersistentData::loadLevels(){
             {initVelocity.x, initVelocity.y},
             {tankPosition.x, tankPosition.y},
             {targetPosition.x, targetPosition.y},
-            {}, //Hints is left blank for now
+            {}, //ShowSolution is left blank for now
             solution,
             angleOverVel,
             totalAttempts,
