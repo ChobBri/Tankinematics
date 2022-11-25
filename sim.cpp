@@ -223,7 +223,7 @@ void Simulation::update()
         userIn.captureText();
     }
 
-        cout << gravity << endl;
+        // cout << gravity << endl; was this for debug?
 }
 
 
