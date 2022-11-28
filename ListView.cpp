@@ -83,8 +83,8 @@ replayButton ListView::drawHistoryEntry(Level level, int position){
     DrawText(TextFormat("Level type: %s", levelTypeToString(level.levelType)),  leftBoxEdge+4, topBoxEdge+4 + 28,   fontSize, BLACK);
 
     //Draw play button and text
-    Rectangle playButton = {leftBoxEdge + boxWidth - 94, topBoxEdge + 4, 90, boxHeight-8};
-    DrawRectangleRec(playButton, LIME);
+    Rectangle playButton = {leftBoxEdge + boxWidth - 94, topBoxEdge + 4, 90, boxHeight-8}; //Button class not used because this is it's own UI element. Its a listView, NOT a button wrapper.
+    DrawRectangleRec(playButton, (Color){ 96, 117, 46, 255 });
     DrawText(TextFormat("Replay"), leftBoxEdge + boxWidth - 90, topBoxEdge + 8, 26, WHITE);
 
     replayButton returnValue{replayButton{playButton, position}};
