@@ -72,7 +72,7 @@ int main(void)
     Button replayButton = Button(385, 250, 90, 60, "resources/replayButton.png");
     Button mainMenuButton = Button(435, 320, 90, 60, "resources/mainMenuButton.png");
     Button nextLevelButton = Button(485, 250, 90, 60, "resources/nextLevelButton.png");
-    Button solutionButton = Button(900, 10, 60, 60, "resources/solutionButton.png");
+    Button solutionButton = Button(890, 10, 60, 60, "resources/solutionButton.png");
     Button simulateButton = Button(screenWidth/2.5+20, 70, 120, 40, "resources/simulateButton.png");
 
 

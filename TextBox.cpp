@@ -47,7 +47,7 @@ string TextBox::getCurrentValue(){
 
 void TextBox::drawBox(){
     DrawRectangleRec(bounds, LIGHTGRAY);
-    DrawText(currentValue, bounds.x, bounds.y, fontSize, BLACK);
+    DrawText(currentValue, bounds.x + 5, bounds.y +5, fontSize, BLACK);
 }
 
 void TextBox::reset(){

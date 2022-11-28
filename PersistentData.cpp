@@ -35,6 +35,8 @@ void PersistentData::saveLevels(vector<Level> source){
     return;
 }
 
+
+
 /**
  *Loads level history data from file on disk, then returns 
  a vector of levels from extracted data. 
@@ -69,7 +71,8 @@ vector<Level> PersistentData::loadLevels(){
 
         issLine >> gravity >> angle >> initSpeed >> initVelocity.x >> initVelocity.y >> tankPosition.x >> tankPosition.y >> targetPosition.x >> targetPosition.y >> angleOverVel >> totalAttempts >> successfulAttempts >> time >> levelTypeString >> solution;
         
-        if (!(gravity || angle || initSpeed || initVelocity.x || initVelocity.y)) { //levelHistory corrupted, give user error message and reset corrupted file
+        //These cannot all be zero, this would indicate corruption as there is not enough information for a level
+        if (!(gravity) && !(angle) && !(initSpeed) && !(initVelocity.x) && !(initVelocity.y)) { //levelHistory corrupted, give user error message and reset corrupted file
             inputStream.close();
             inputStream.open(relativeLevelFilePath, ios::out | ios::trunc); //open with trunc flag to clear the file
             inputStream.close();
@@ -77,24 +80,33 @@ vector<Level> PersistentData::loadLevels(){
             return importedLevels;
         }
     
+        
         //convert (string)levelType to levelType 
-        switch (stoi(levelTypeString))
-        {
-        case 0:
-            levelType = Level::LevelType::Gravity;
-            break;
-        case 1:
-            levelType = Level::LevelType::Angle;
-            break;
-        case 2:
-            levelType = Level::LevelType::InitSpeed;
-            break;
-        case 3:
-            levelType = Level::LevelType::InitVelX;
-            break;
-        default:
-            levelType = Level::LevelType::InitVelY;
-            break;
+        try {
+            switch (stoi(levelTypeString))
+            {
+            case 0:
+                levelType = Level::LevelType::Gravity;
+                break;
+            case 1:
+                levelType = Level::LevelType::Angle;
+                break;
+            case 2:
+                levelType = Level::LevelType::InitSpeed;
+                break;
+            case 3:
+                levelType = Level::LevelType::InitVelX;
+                break;
+            default:
+                levelType = Level::LevelType::InitVelY;
+                break;
+            }
+        } catch (std::invalid_argument e) { //If stoi throws an error, then levelTypeString field was corrupted
+            inputStream.close();
+            inputStream.open(relativeLevelFilePath, ios::out | ios::trunc); //open with trunc flag to clear the file
+            inputStream.close();
+            PersistentData::wasError = true;
+            return importedLevels;
         }
        
 
@@ -125,6 +137,8 @@ vector<Level> PersistentData::loadLevels(){
     }
     inputStream.close();
     return importedLevels;
+
+    
 }
 
 /**
