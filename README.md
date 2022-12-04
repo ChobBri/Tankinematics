@@ -1,12 +1,12 @@
-![alt text](/resources/titleScreenLogo.png "Title")
+![alt text](resources/titleScreenLogo.png)
 
               
             
               
-#Tankinematics         
+# Tankinematics         
 The Physics study tool that's both fun and helpful     
          
-##Steps to set up your machine:
+## Steps to set up your machine:
 //ZEROTH//   
 Install git, then run these two commands:   
 git config --global user.name "Firstname Lastname"   
